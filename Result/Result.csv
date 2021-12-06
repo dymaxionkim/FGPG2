@@ -1,0 +1,18 @@
+Type,Standard,
+Module,1.5,mm
+Pressure Angle,20.0,deg
+Teeth Number,53,ea
+Offset Factor,0.2,
+Offset,0.30000000000000004,mm
+Backlash Factor,0.02,
+Backlash,0.03,mm
+Addendum Factor,1.0,
+Addendum,1.5,mm
+Dedendum Factor,1.25,
+Dedendum,1.875,mm
+Total Tooth Height,2.25,mm
+Base Circle Dia,74.70556335247971,mm
+Pitch Circle Dia,79.5,mm
+Offset Circle Dia,80.1,mm
+Root Circle Dia,76.35,mm
+outer Circle Dia,83.1,mm
