@@ -285,7 +285,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     fileout.write("Offset Circle Dia,"+repr(offset_dia)+",mm"+"\n")
     fileout.write("Root Circle Dia,"+repr(root_dia)+",mm"+"\n")
     fileout.write("outer Circle Dia,"+repr(outer_dia)+",mm"+"\n")
-    fileout.close()
+    fileout.close()    
 
 ##############################
 # GUI
@@ -293,7 +293,7 @@ sg.theme('Default')
 
 left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
             [sg.Text('Module, m =',size = (32,1)),sg.Input(1.0,key='-m-',size = (10,1)),sg.Text('[mm], (>0)')],
-            [sg.Text('Teeth Number, z =',size = (32,1)),sg.Input(15,key='-z-',size = (10,1)),sg.Text('[ea], (6~150)')],
+            [sg.Text('Teeth Number, z =',size = (32,1)),sg.Input(15,key='-z-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Pressure Angle [Deg], alpha =',size = (32,1)),sg.Input(20.0,key='-alpha-',size = (10,1)),sg.Text('[deg]')],
             [sg.Text('Offset Factor, x =',size = (32,1)),sg.Input(0.2,key='-x-',size = (10,1)),sg.Text('(-1~+1)')],
             [sg.Text('Backlash Factor, b =',size = (32,1)),sg.Input(0.05,key='-b-',size = (10,1)),sg.Text('(0~1)')],
@@ -314,7 +314,7 @@ left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
             [sg.Text('Segmentation Numbers, seg_root =',size = (32,1)),sg.Input(5,key='-seg_root-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Scale for One Tooth, scale =',size = (32,1)),sg.Input(0.7,key='-scale-',size = (10,1)),sg.Text('(0.1~1)')]]
 
-right_col = [[sg.Text('Working Directory :',size = (8,1)), sg.Input('./Result/',key='-WorkingDirectoty-'), sg.FolderBrowse()],
+right_col = [[sg.Text('Working Directory :',size=(8,1)), sg.Input('./Result/',key='-WorkingDirectoty-',size=(16,1)), sg.FolderBrowse()],
             [sg.Image('FGPG2.png',size=(500,500),key='-IMAGE-')],
             [sg.Text('Hello',key='-TEXT-')],
             [sg.Button('Load'), sg.Button('Run'), sg.Button('Toggle'), sg.Button('Exit')]]
@@ -328,40 +328,49 @@ window = sg.Window('FGPG2', layout)
 while True:
     event, values = window.read()
 
-    m = float(values['-m-'])
-    z = int(values['-z-'])
-    alpha = float(values['-alpha-'])
-    x = float(values['-x-'])
-    b = float(values['-b-'])
-    a = float(values['-a-'])
-    d = float(values['-d-'])
-    c = float(values['-c-'])
-    e = float(values['-e-'])
-    x_0 = float(values['-x_0-'])
-    y_0 = float(values['-y_0-'])
-    seg_circle = int(values['-seg_circle-'])
-    seg_involute = int(values['-seg_involute-'])
-    seg_edge_r = int(values['-seg_edge_r-'])
-    seg_root_r = int(values['-seg_root_r-'])
-    seg_center = int(values['-seg_center-'])
-    seg_outer = int(values['-seg_outer-'])
-    seg_root = int(values['-seg_root-'])
-    scale = float(values['-scale-'])
-    WorkingDirectory = values['-WorkingDirectoty-']
+    try:
+        m = float(values['-m-'])
+        z = int(values['-z-'])
+        alpha = float(values['-alpha-'])
+        x = float(values['-x-'])
+        b = float(values['-b-'])
+        a = float(values['-a-'])
+        d = float(values['-d-'])
+        c = float(values['-c-'])
+        e = float(values['-e-'])
+        x_0 = float(values['-x_0-'])
+        y_0 = float(values['-y_0-'])
+        seg_circle = int(values['-seg_circle-'])
+        seg_involute = int(values['-seg_involute-'])
+        seg_edge_r = int(values['-seg_edge_r-'])
+        seg_root_r = int(values['-seg_root_r-'])
+        seg_center = int(values['-seg_center-'])
+        seg_outer = int(values['-seg_outer-'])
+        seg_root = int(values['-seg_root-'])
+        scale = float(values['-scale-'])
+        WorkingDirectory = values['-WorkingDirectoty-']
+    except:
+        sg.popup('Type error.')
 
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     elif event == 'Load':
         Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
-        window.load_from_disk(Inputs)
-        window['-TEXT-'].update('Load : OK')
+        if os.path.exists(Inputs) :
+            window.load_from_disk(Inputs)
+            window['-TEXT-'].update('Load : OK')
+        else :
+            sg.popup('The File not exists : %s'%Inputs)
     elif event == 'Run':
-        FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_center,seg_outer,seg_root,scale)
-        Result = os.path.join(WorkingDirectory, f'Result.png')
-        window['-IMAGE-'].update(Result,size=(500,500))
-        Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
-        window.save_to_disk(Inputs)
-        window['-TEXT-'].update('Run : OK')
+        if os.path.exists(WorkingDirectory) :
+            FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_center,seg_outer,seg_root,scale)
+            Result = os.path.join(WorkingDirectory, f'Result.png')
+            window['-IMAGE-'].update(Result,size=(500,500))
+            Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
+            window.save_to_disk(Inputs)
+            window['-TEXT-'].update('Run : OK')
+        else :
+            sg.popup('The Directory not exists : %s'%WorkingDirectory)
     elif event == 'Toggle':
         if CurrentImage == 'Result':
             Result = os.path.join(WorkingDirectory, f'Result2.png')
