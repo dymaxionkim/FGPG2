@@ -284,7 +284,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     fileout.write("Pitch Circle Dia,"+repr(pitch_dia)+",mm"+"\n")
     fileout.write("Offset Circle Dia,"+repr(offset_dia)+",mm"+"\n")
     fileout.write("Root Circle Dia,"+repr(root_dia)+",mm"+"\n")
-    fileout.write("outer Circle Dia,"+repr(outer_dia)+",mm"+"\n")
+    fileout.write("Outer Circle Dia,"+repr(outer_dia)+",mm"+"\n")
     fileout.close()    
 
 ##############################
