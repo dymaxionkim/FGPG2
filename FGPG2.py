@@ -6,7 +6,7 @@ import ezdxf
 
 ##############################
 # Function
-def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,SEG_ROOT_R,SEG_CENTER,SEG_OUTER,SEG_ROOT,SCALE) :
+def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,SEG_ROOT_R,SEG_OUTER,SEG_ROOT,SCALE) :
 
     ####################
     # Graphics
@@ -50,7 +50,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     # Parameter Range of Edge Round
     theta3_min = np.arctan((Y11[len(Y11)-1]-y_e0)/(X11[len(X11)-1]-x_e0))
     theta3_max = np.arctan((y_e-y_e0)/(x_e-x_e0))
-    THETA3 = np.linspace(theta3_min,theta3_max,seg_edge_r) 
+    THETA3 = np.linspace(theta3_min,theta3_max,SEG_EDGE_R) 
     X21 = M*E*np.cos(THETA3) + x_e0
     Y21 = M*E*np.sin(THETA3) + y_e0
     X22 = X21
@@ -64,7 +64,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     # THETA_s = Substitution Variable to plot Root Round Curve
     alpha_ts = (2*(C*(1-np.sin(alpha_0))-D)*np.sin(alpha_0)+B)/(Z*np.cos(alpha_0)) - 2*C*np.cos(alpha_0)/Z + np.pi/(2*Z)
     theta_te = 2*C*np.cos(alpha_0)/Z - 2*(D-X-C*(1-np.sin(alpha_0)))*np.cos(alpha_0)/(Z*np.sin(alpha_0))
-    THETA_t  = np.linspace(0,theta_te,seg_root_r)
+    THETA_t  = np.linspace(0,theta_te,SEG_ROOT_R)
     if (C!=0) and ((D-X-C)==0) :
         # mc를 반지름으로 하는 원호를 그려서 대체하게 됨
         THETA_s = (np.pi/2)*np.ones(len(THETA_t))
@@ -309,7 +309,6 @@ left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
             [sg.Text('Segmentation Numbers, seg_involute =',size = (32,1)),sg.Input(15,key='-seg_involute-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Segmentation Numbers, seg_edge_r =',size = (32,1)),sg.Input(5,key='-seg_edge_r-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Segmentation Numbers, seg_root_r =',size = (32,1)),sg.Input(5,key='-seg_root_r-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_center =',size = (32,1)),sg.Input(5,key='-seg_center-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Segmentation Numbers, seg_outer =',size = (32,1)),sg.Input(5,key='-seg_outer-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Segmentation Numbers, seg_root =',size = (32,1)),sg.Input(5,key='-seg_root-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Scale for One Tooth, scale =',size = (32,1)),sg.Input(0.7,key='-scale-',size = (10,1)),sg.Text('(0.1~1)')]]
@@ -344,7 +343,6 @@ while True:
         seg_involute = int(values['-seg_involute-'])
         seg_edge_r = int(values['-seg_edge_r-'])
         seg_root_r = int(values['-seg_root_r-'])
-        seg_center = int(values['-seg_center-'])
         seg_outer = int(values['-seg_outer-'])
         seg_root = int(values['-seg_root-'])
         scale = float(values['-scale-'])
@@ -363,7 +361,7 @@ while True:
             sg.popup('The File not exists : %s'%Inputs)
     elif event == 'Run':
         if os.path.exists(WorkingDirectory) :
-            FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_center,seg_outer,seg_root,scale)
+            FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_outer,seg_root,scale)
             Result = os.path.join(WorkingDirectory, f'Result.png')
             window['-IMAGE-'].update(Result,size=(500,500))
             Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
