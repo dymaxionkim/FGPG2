@@ -233,8 +233,8 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     for i in range(0,len(Xdxf5)) :
         cpoint5.append((Xdxf5[i],Ydxf5[i]))
         cpoint6.append((Xdxf6[i],Ydxf6[i]))
-    msp.add_open_spline(cpoint5)
-    msp.add_open_spline(cpoint6)
+    msp.add_spline(cpoint5)
+    msp.add_spline(cpoint6)
     
     # Arc outer
     outer_angle = np.arctan(Xdxf3[0]/Ydxf3[0])*360.0/(2.0*np.pi)
