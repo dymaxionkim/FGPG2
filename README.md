@@ -78,7 +78,13 @@ pyinstaller -w -F FGPG2.py
 
 * __Inputs.dat__ : Parameters data for UI
 * __Result.csv__ : Gear spec data
+
+![](./img/Screenshot_csv.jpg)
+
 * __Result.dxf__ : dxf CAD file for one tooth
+
+![](./img/Screenshot_dxf.jpg)
+
 * __Result.png__ : Gear geometry for whole teeth
 
 ![](./Result/Result.png)
@@ -86,9 +92,4 @@ pyinstaller -w -F FGPG2.py
 * __Result2.png__ : Gear geometry for one tooth
 
 ![](./Result/Result2.png)
-
-
-
-
-
 
