@@ -360,8 +360,7 @@ while True:
         else :
             sg.popup('The File not exists : %s'%Inputs)
     elif event == 'Run':
-        if not os.path.exists(WorkingDirectory) :
-            os.makedirs(WorkingDirectory)
+        os.makedirs(WorkingDirectory, exist_ok=True)
         FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_outer,seg_root,scale)
         Result = os.path.join(WorkingDirectory, f'Result.png')
         window['-IMAGE-'].update(Result,size=(500,500))
