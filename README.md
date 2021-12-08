@@ -97,10 +97,10 @@ pyinstaller -w -F FGPG2.py
 
 * __Result.png__ : Gear geometry for whole teeth
 
-![](./Result/Result.png)
+![](./img/Result.png)
 
 * __Result2.png__ : Gear geometry for one tooth
 
-![](./Result/Result2.png)
+![](./img/Result2.png)
 
 ## Thank you!
