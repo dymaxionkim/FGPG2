@@ -1,13 +1,12 @@
 # FGPG2
 
-_Fine Involute Gear Profile Generator 2_
+_Fine Involute Gear Profile Generator 2 - with python3_
 
-_with python3_
 
 
 ## Using on PC
 
-* Install python3, git
+* Install python3 and git
 * Install some libraries :
 
 ```
@@ -16,33 +15,40 @@ pip install matplotlib
 pip install ezdxf
 pip install pysimplegui
 ```
-* Clone this repository
+* Clone this repository by git
 * Run :
 
 ```
 python FGPG2.py
 ```
 
+![](./img/Screenshot_GUI.png)
+
+
+
 ## Build exe in MS Windows 10
 
-* Development version of pyinstaller is needed because of matplotlib matching
+* Development version of pyinstaller is needed because of matplotlib matching issue.
 
 ```
 pip install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
 pyinstaller -w -F FGPG2.py
 ```
 
-## Using on Android by Pydroid3
 
-* Install Pydroid3
-* Install some libraries by Pip menu in Pydroid (numpy, matplotlib, ezdxf, pysimplegui)
-* Install mgit
+
+## Using on Android Device by Pydroid3
+
+* Install [Pydroid3](https://play.google.com/store/apps/details?id=ru.iiec.pydroid3&hl=ko&gl=US) in PlayStore
+* Install some libraries by Pip menu in Pydroid3 (numpy, matplotlib, ezdxf, pysimplegui)
+* Install [mgit](https://play.google.com/store/apps/details?id=com.manichord.mgit&hl=ko&gl=US) in PlayStore
 * Clone this repository
 * Load FGPG2.py and run
 
 ![](./img/Screenshot_Pydroid3.jpg)
 
 ![](./img/Screenshot_Android.jpg)
+
 
 
 ## UI Buttons
@@ -52,6 +58,8 @@ pyinstaller -w -F FGPG2.py
 * __Run__ : Calculate, Plot, Save plotted images, Save dxf, Save csv
 * __Toggle__ : Change output image
 * __Exit__ : Finish
+
+
 
 ## Input parameters
 
@@ -74,6 +82,8 @@ pyinstaller -w -F FGPG2.py
 * __seg root__ : Number of contol points for root arc
 * __scale__ : Scale factor for one tooth plot
 
+
+
 ## Output files
 
 * __Inputs.dat__ : Parameters data for UI
@@ -93,3 +103,4 @@ pyinstaller -w -F FGPG2.py
 
 ![](./Result/Result2.png)
 
+## Thank you!
