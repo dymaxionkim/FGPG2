@@ -360,15 +360,14 @@ while True:
         else :
             sg.popup('The File not exists : %s'%Inputs)
     elif event == 'Run':
-        if os.path.exists(WorkingDirectory) :
-            FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_outer,seg_root,scale)
-            Result = os.path.join(WorkingDirectory, f'Result.png')
-            window['-IMAGE-'].update(Result,size=(500,500))
-            Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
-            window.save_to_disk(Inputs)
-            window['-TEXT-'].update('Run : OK')
-        else :
-            sg.popup('The Directory not exists : %s'%WorkingDirectory)
+        if not os.path.exists(WorkingDirectory) :
+            os.makedirs(WorkingDirectory)
+        FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_outer,seg_root,scale)
+        Result = os.path.join(WorkingDirectory, f'Result.png')
+        window['-IMAGE-'].update(Result,size=(500,500))
+        Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
+        window.save_to_disk(Inputs)
+        window['-TEXT-'].update('Run : OK')
     elif event == 'Toggle':
         if CurrentImage == 'Result':
             Result = os.path.join(WorkingDirectory, f'Result2.png')
