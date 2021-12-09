@@ -32,7 +32,7 @@ python FGPG2.py
 
 ```
 pip install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
-pyinstaller -w -F FGPG2.py
+pyinstaller --icon=FGPG2.ico -w -F FGPG2.py
 ```
 
 
