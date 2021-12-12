@@ -103,4 +103,11 @@ pyinstaller --icon=FGPG2.ico -w -F FGPG2.py
 
 ![](./img/Result2.png)
 
+## Ref.
+
+* [Calculate Gear Spec](https://tro.kr/11) : Excel Sheet
+* [Calculate Gear Spec](https://tro.kr/49) : Web
+
+
+
 ## Thank you!
