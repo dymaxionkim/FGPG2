@@ -310,7 +310,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     Result = os.path.join(WorkingDirectory, f'Result1.png')
     plt.savefig(Result,dpi=100)
     #Result = os.path.join(WorkingDirectory, f'Result1.svg')
-    plt.savefig(Result)
+    #plt.savefig(Result)
 
     # Save Figure for One Tooth
     Y_height = ((outer_dia-root_dia)/2.0)/SCALE
@@ -324,7 +324,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     Result2 = os.path.join(WorkingDirectory, f'Result2.png')
     plt.savefig(Result2,dpi=100)
     #Result2 = os.path.join(WorkingDirectory, f'Result2.svg')
-    plt.savefig(Result2)
+    #plt.savefig(Result2)
 
     ####################
     # Save DXF
