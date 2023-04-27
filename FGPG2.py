@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ezdxf
 
+sg.set_options(font=('D2Coding', 12))
+
 ##############################
 """
 # Input Parameters
@@ -343,29 +345,31 @@ if not os.path.exists(LogoImage) :
 
 sg.theme('Default')
 
+Text_Width = 42
+
 left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
-            [sg.Text('Module, m =',size = (32,1)),sg.Input(1.0,key='-m-',size = (10,1)),sg.Text('[mm], (>0)')],
-            [sg.Text('Teeth Number, z =',size = (32,1)),sg.Input(13,key='-z-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Pressure Angle [Deg], alpha =',size = (32,1)),sg.Input(20.0,key='-alpha-',size = (10,1)),sg.Text('[deg]')],
-            [sg.Text('Offset Factor, x =',size = (32,1)),sg.Input(0.5,key='-x-',size = (10,1)),sg.Text('(-1~+1)')],
-            [sg.Text('Backlash Factor, b =',size = (32,1)),sg.Input(0.05,key='-b-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Addendum Factor, a =',size = (32,1)),sg.Input(1.0,key='-a-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Dedendum Factor, d =',size = (32,1)),sg.Input(1.25,key='-d-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Radius Factor of Edge Round of Hob, c =',size = (32,1)),sg.Input(0.25,key='-c-',size = (10,1))],
-            [sg.Text('Radius Factor of Edge Round of Tooth, e =',size = (32,1)),sg.Input(0.15,key='-e-',size = (10,1))],
+            [sg.Text('Module, m =',size = (Text_Width,1)),sg.Input(1.0,key='-m-',size = (10,1)),sg.Text('[mm], (>0)')],
+            [sg.Text('Teeth Number, z =',size = (Text_Width,1)),sg.Input(13,key='-z-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Pressure Angle [Deg], alpha =',size = (Text_Width,1)),sg.Input(20.0,key='-alpha-',size = (10,1)),sg.Text('[deg]')],
+            [sg.Text('Offset Factor, x =',size = (Text_Width,1)),sg.Input(0.5,key='-x-',size = (10,1)),sg.Text('(-1~+1)')],
+            [sg.Text('Backlash Factor, b =',size = (Text_Width,1)),sg.Input(0.05,key='-b-',size = (10,1)),sg.Text('(0~1)')],
+            [sg.Text('Addendum Factor, a =',size = (Text_Width,1)),sg.Input(1.0,key='-a-',size = (10,1)),sg.Text('(0~1)')],
+            [sg.Text('Dedendum Factor, d =',size = (Text_Width,1)),sg.Input(1.25,key='-d-',size = (10,1)),sg.Text('(0~1)')],
+            [sg.Text('Radius Factor of Edge Round of Hob, c =',size = (Text_Width,1)),sg.Input(0.25,key='-c-',size = (10,1))],
+            [sg.Text('Radius Factor of Edge Round of Tooth, e =',size = (Text_Width,1)),sg.Input(0.15,key='-e-',size = (10,1))],
 
             [sg.Text('2. Graphics',font='ARIAL 16')],
-            [sg.Text('Center of Gear, x_0 =',size = (32,1)),sg.Input(0.0,key='-x_0-',size = (10,1)),sg.Text('[mm]')],
-            [sg.Text('Center of Gear, y_0 =',size = (32,1)),sg.Input(0.0,key='-y_0-',size = (10,1)),sg.Text('[mm]')],
-            [sg.Text('Segmentation Numbers, seg_circle =',size = (32,1)),sg.Input(360,key='-seg_circle-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_involute =',size = (32,1)),sg.Input(15,key='-seg_involute-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_edge_r =',size = (32,1)),sg.Input(15,key='-seg_edge_r-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_root_r =',size = (32,1)),sg.Input(15,key='-seg_root_r-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_outer =',size = (32,1)),sg.Input(5,key='-seg_outer-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_root =',size = (32,1)),sg.Input(5,key='-seg_root-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Scale for One Tooth, scale =',size = (32,1)),sg.Input(0.7,key='-scale-',size = (10,1)),sg.Text('(0.1~1)')]]
+            [sg.Text('Center of Gear, x_0 =',size = (Text_Width,1)),sg.Input(0.0,key='-x_0-',size = (10,1)),sg.Text('[mm]')],
+            [sg.Text('Center of Gear, y_0 =',size = (Text_Width,1)),sg.Input(0.0,key='-y_0-',size = (10,1)),sg.Text('[mm]')],
+            [sg.Text('Segmentation Numbers, seg_circle =',size = (Text_Width,1)),sg.Input(360,key='-seg_circle-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Segmentation Numbers, seg_involute =',size = (Text_Width,1)),sg.Input(15,key='-seg_involute-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Segmentation Numbers, seg_edge_r =',size = (Text_Width,1)),sg.Input(15,key='-seg_edge_r-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Segmentation Numbers, seg_root_r =',size = (Text_Width,1)),sg.Input(15,key='-seg_root_r-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Segmentation Numbers, seg_outer =',size = (Text_Width,1)),sg.Input(5,key='-seg_outer-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Segmentation Numbers, seg_root =',size = (Text_Width,1)),sg.Input(5,key='-seg_root-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Scale for One Tooth, scale =',size = (Text_Width,1)),sg.Input(0.7,key='-scale-',size = (10,1)),sg.Text('(0.1~1)')]]
 
-right_col = [[sg.Text('Working Directory :',size=(8,1)), sg.Input('./Result/',key='-WorkingDirectoty-',size=(16,1)), sg.FolderBrowse()],
+right_col = [[sg.Text('Working Directory :',size=(int(Text_Width/2),1)), sg.Input('./Result/',key='-WorkingDirectoty-',size=(16,1)), sg.FolderBrowse()],
             [sg.Image(LogoImage,size=(500,500),key='-IMAGE-')],
             [sg.Text('Hello',key='-TEXT-')],
             [sg.Button('Load'), sg.Button('Run'), sg.Button('Toggle'), sg.Button('Exit')]]
