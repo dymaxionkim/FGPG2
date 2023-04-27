@@ -50,6 +50,23 @@ pyinstaller --icon=FGPG2.ico -w -F FGPG2.py
 ![](./img/Screenshot_Android.jpg)
 
 
+## Using on Linux
+
+* **Anaconda3** has Tk font problem.
+* In **pyenv** Environment
+
+```bash
+pyenv install 3.11.3
+pyenv global 3.11.3
+
+pip install numpy
+pip install matplotlib
+pip install ezdxf
+pip install pysimplegui
+
+python FGPG2.py
+```
+
 
 ## UI Buttons
 
