@@ -10,10 +10,7 @@ _Fine Involute Gear Profile Generator 2 - with python3_
 * Install some libraries :
 
 ```
-pip install numpy
-pip install matplotlib
-pip install ezdxf
-pip install pysimplegui
+conda install numpy matplotlib ezdxf pysimplegui
 ```
 * Clone this repository by git
 * Run :
