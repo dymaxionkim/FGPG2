@@ -40,6 +40,21 @@ THETA7, Linspace for root Arc
 
 ##############################
 # Function
+def Internal(Z,X,B,A,D,C,E):
+    if Z<0 :
+        Z = -Z
+        #X = -X
+        B = -B
+        A_temp = A
+        D_temp = D
+        A = D_temp
+        D = A_temp
+        C_temp = C
+        E_temp = E
+        C = E_temp
+        E = C_temp
+    return Z,X,B,A,D,C,E
+
 def Parameters(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,SEG_ROOT_R,SEG_OUTER,SEG_ROOT,SCALE):
     ALPHA_0 = ALPHA*(2*np.pi/360)
     ALPHA_M = np.pi/Z
@@ -221,6 +236,7 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     plt.grid(True)
     
     # Gear tooth
+    Z,X,B,A,D,C,E = Internal(Z,X,B,A,D,C,E)
     ALPHA_0,ALPHA_M,ALPHA_IS,THETA_IS,THETA_IE,ALPHA_E,X_E,Y_E,X_E0,Y_E0,ALPHA_TS,THETA_TE,E,P_ANGLE,ALIGN_ANGLE = Parameters(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,SEG_ROOT_R,SEG_OUTER,SEG_ROOT,SCALE)
     X11,Y11,THETA1 = InvoluteCurve(M,Z,SEG_INVOLUTE,THETA_IS,THETA_IE,ALPHA_0,ALPHA_IS)
     X12,Y12 = SymetryY(X11,Y11)
@@ -349,14 +365,14 @@ Text_Width = 42
 
 left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
             [sg.Text('Module, m =',size = (Text_Width,1)),sg.Input(1.0,key='-m-',size = (10,1)),sg.Text('[mm], (>0)')],
-            [sg.Text('Teeth Number, z =',size = (Text_Width,1)),sg.Input(13,key='-z-',size = (10,1)),sg.Text('[ea]')],
+            [sg.Text('Teeth Number, z =',size = (Text_Width,1)),sg.Input(+18,key='-z-',size = (10,1)),sg.Text('[ea], (+/-)')],
             [sg.Text('Pressure Angle [Deg], alpha =',size = (Text_Width,1)),sg.Input(20.0,key='-alpha-',size = (10,1)),sg.Text('[deg]')],
-            [sg.Text('Offset Factor, x =',size = (Text_Width,1)),sg.Input(0.5,key='-x-',size = (10,1)),sg.Text('(-1~+1)')],
+            [sg.Text('Offset Factor, x =',size = (Text_Width,1)),sg.Input(0.2,key='-x-',size = (10,1)),sg.Text('(-1~+1)')],
             [sg.Text('Backlash Factor, b =',size = (Text_Width,1)),sg.Input(0.05,key='-b-',size = (10,1)),sg.Text('(0~1)')],
             [sg.Text('Addendum Factor, a =',size = (Text_Width,1)),sg.Input(1.0,key='-a-',size = (10,1)),sg.Text('(0~1)')],
             [sg.Text('Dedendum Factor, d =',size = (Text_Width,1)),sg.Input(1.25,key='-d-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Radius Factor of Edge Round of Hob, c =',size = (Text_Width,1)),sg.Input(0.25,key='-c-',size = (10,1))],
-            [sg.Text('Radius Factor of Edge Round of Tooth, e =',size = (Text_Width,1)),sg.Input(0.15,key='-e-',size = (10,1))],
+            [sg.Text('Radius Factor of Edge Round of Hob, c =',size = (Text_Width,1)),sg.Input(0.2,key='-c-',size = (10,1))],
+            [sg.Text('Radius Factor of Edge Round of Tooth, e =',size = (Text_Width,1)),sg.Input(0.1,key='-e-',size = (10,1))],
 
             [sg.Text('2. Graphics',font='ARIAL 16')],
             [sg.Text('Center of Gear, x_0 =',size = (Text_Width,1)),sg.Input(0.0,key='-x_0-',size = (10,1)),sg.Text('[mm]')],
