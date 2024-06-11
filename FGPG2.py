@@ -43,7 +43,7 @@ THETA7, Linspace for root Arc
 def Internal(Z,X,B,A,D,C,E):
     if Z<0 :
         Z = -Z
-        #X = -X
+        X = -X
         B = -B
         A_temp = A
         D_temp = D
@@ -385,7 +385,7 @@ left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
             [sg.Text('Segmentation Numbers, seg_root =',size = (Text_Width,1)),sg.Input(5,key='-seg_root-',size = (10,1)),sg.Text('[ea]')],
             [sg.Text('Scale for One Tooth, scale =',size = (Text_Width,1)),sg.Input(0.7,key='-scale-',size = (10,1)),sg.Text('(0.1~1)')]]
 
-right_col = [[sg.Text('Working Directory :',size=(int(Text_Width/2),1)), sg.Input('./Result/',key='-WorkingDirectoty-',size=(16,1)), sg.FolderBrowse()],
+right_col = [[sg.Text('Working Directory :',size=(int(Text_Width/2),1)), sg.Input('./Result/',key='-WorkingDirectoty-',size=(30,1)), sg.FolderBrowse()],
             [sg.Image(LogoImage,size=(500,500),key='-IMAGE-')],
             [sg.Text('Hello',key='-TEXT-')],
             [sg.Button('Load'), sg.Button('Run'), sg.Button('Toggle'), sg.Button('Exit')]]
