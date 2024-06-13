@@ -359,7 +359,7 @@ CurrentImage = 'Result'
 if not os.path.exists(LogoImage) :
     exit()
 
-sg.theme('Default')
+sg.theme('Gray Gray Gray')
 
 Text_Width = 42
 
