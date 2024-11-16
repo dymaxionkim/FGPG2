@@ -219,7 +219,7 @@ def SaveSpec(M,ALPHA,Z,X,A,D,B,BASE_DIA,PITCH_DIA,OFFSET_DIA,ROOT_DIA,OUTER_DIA)
     fileout.write("Dedendum Factor,"+repr(D)+",\n")
     fileout.write("Dedendum,"+repr(D*M)+",mm\n")
     fileout.write("Total Tooth Height,"+repr(A*M+D*M)+",mm\n")
-    fileout.write("Base Circle Dia,"+repr(BASE_DIA)+",mm\n")
+    fileout.write("Base Circle Dia,"+str(BASE_DIA)+",mm\n")
     fileout.write("Pitch Circle Dia,"+repr(PITCH_DIA)+",mm\n")
     fileout.write("Offset Circle Dia,"+repr(OFFSET_DIA)+",mm\n")
     fileout.write("Root Circle Dia,"+repr(ROOT_DIA)+",mm\n")
@@ -359,7 +359,7 @@ CurrentImage = 'Result'
 if not os.path.exists(LogoImage) :
     exit()
 
-sg.theme('Default')
+sg.theme('DefaultNoMoreNagging')
 
 Text_Width = 42
 

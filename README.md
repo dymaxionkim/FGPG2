@@ -23,13 +23,14 @@ python FGPG2.py
 
 
 
-## Build exe in MS Windows 10
+## Build exe in MS Windows 11
 
 * Development version of pyinstaller is needed because of matplotlib matching issue.
 
 ```
 pip install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
 pyinstaller --icon=FGPG2.ico -w -F FGPG2.py
+copy .\FGPG2.png .\dist\FGPG2.png 
 ```
 
 
