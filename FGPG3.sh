@@ -6,6 +6,6 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
-pyenv activate py312
+pyenv activate py39
 python FGPG3.py
-pyenv deactivate py312
+pyenv deactivate py39
