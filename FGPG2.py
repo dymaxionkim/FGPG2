@@ -1,6 +1,7 @@
 import customtkinter
 from customtkinter import filedialog
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import ezdxf
@@ -547,8 +548,8 @@ app = customtkinter.CTk()
 app.title("FGPG2 with customtkinter")
 app.geometry("915x635")
 app.resizable(width=False, height=False)
-app.iconbitmap('FGPG2.ico')
 font16 = customtkinter.CTkFont(size=16)
+if ( sys.platform.startswith('win')): app.iconbitmap('FGPG2.ico')
 
 # Subject
 label_x0_1 = customtkinter.CTkLabel(app, text="# Gear Spec", fg_color="transparent", compound="right", font=font16)
