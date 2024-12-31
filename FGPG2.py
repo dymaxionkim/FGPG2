@@ -375,8 +375,8 @@ def init_parameters():
     entry_y0.insert(0,0.0)
     entry_seg_circle.insert(0,360)
     entry_seg_involute.insert(0,15)
-    entry_seg_edge_r.insert(0,9)
-    entry_seg_root_r.insert(0,9)
+    entry_seg_edge_r.insert(0,5)
+    entry_seg_root_r.insert(0,5)
     entry_seg_outer.insert(0,5)
     entry_seg_root.insert(0,5)
     entry_scale.insert(0,0.7)
@@ -469,24 +469,24 @@ def save_parameters():
     read_parameters()
     Outputs = os.path.join(WorkingDirectory, f'Inputs.csv')
     parameters = pandas.read_csv('parameters.csv',index_col="parameter")
-    parameters.loc['m',0] = m
-    parameters.loc['z',0] = z
-    parameters.loc['alpha',0] = alpha
-    parameters.loc['x',0] = x
-    parameters.loc['b',0] = b
-    parameters.loc['a',0] = a
-    parameters.loc['d',0] = d
-    parameters.loc['c',0] = c
-    parameters.loc['e',0] = e
-    parameters.loc['x_0',0] = x_0
-    parameters.loc['y_0',0] = y_0
-    parameters.loc['seg_circle',0] = seg_circle
-    parameters.loc['seg_involute',0] = seg_involute
-    parameters.loc['seg_edge_r',0] = seg_edge_r
-    parameters.loc['seg_root_r',0] = seg_root_r
-    parameters.loc['seg_outer',0] = seg_outer
-    parameters.loc['seg_root',0] = seg_root
-    parameters.loc['scale',0] = scale
+    parameters.loc['m','value'] = m
+    parameters.loc['z','value'] = z
+    parameters.loc['alpha','value'] = alpha
+    parameters.loc['x','value'] = x
+    parameters.loc['b','value'] = b
+    parameters.loc['a','value'] = a
+    parameters.loc['d','value'] = d
+    parameters.loc['c','value'] = c
+    parameters.loc['e','value'] = e
+    parameters.loc['x_0','value'] = x_0
+    parameters.loc['y_0','value'] = y_0
+    parameters.loc['seg_circle','value'] = seg_circle
+    parameters.loc['seg_involute','value'] = seg_involute
+    parameters.loc['seg_edge_r','value'] = seg_edge_r
+    parameters.loc['seg_root_r','value'] = seg_root_r
+    parameters.loc['seg_outer','value'] = seg_outer
+    parameters.loc['seg_root','value'] = seg_root
+    parameters.loc['scale','value'] = scale
     parameters.to_csv(Outputs)
     print(parameters)
 
@@ -729,7 +729,7 @@ label_seg_root_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparen
 label_seg_root_2.grid(row=18, column=2, padx=PADX, pady=PADY, sticky="w")
 
 # Scale for one tooth , scale
-label_scale_1 = customtkinter.CTkLabel(app, text="seg_root = ", fg_color="transparent", compound="right")
+label_scale_1 = customtkinter.CTkLabel(app, text="scale = ", fg_color="transparent", compound="right")
 label_scale_1.grid(row=19, column=0, padx=PADX, pady=PADY, sticky="e")
 
 entry_scale = customtkinter.CTkEntry(app, placeholder_text="0.7")
@@ -756,25 +756,25 @@ button_wd.grid(row=1, column=5, padx=PADX, pady=PADY, sticky="w")
 # Output Image
 image_result = customtkinter.CTkImage(light_image=Image.open("./FGPG2.png"), size=(500,500))
 label_image = customtkinter.CTkLabel(app, text="", image=image_result, compound="left")
-label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=13, columnspan=3)
+label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=14, columnspan=3)
 
 # Output Text
 label_text = customtkinter.CTkLabel(app, text="Output Text.............................", fg_color="transparent", compound="right")
-label_text.grid(row=15, column=3, padx=PADX, pady=PADY, sticky="w", columnspan=3)
+label_text.grid(row=16, column=3, padx=PADX, pady=PADY, sticky="w", columnspan=3)
 
 # Buttons
 button_load = customtkinter.CTkButton(app, text="LOAD", command=button_load_callback)
-button_load.grid(row=16, column=3, padx=PADX, pady=PADY, sticky="w")
+button_load.grid(row=17, column=3, padx=PADX, pady=PADY, sticky="w")
 
 button_run = customtkinter.CTkButton(app, text="RUN", command=button_run_callback)
-button_run.grid(row=17, column=3, padx=PADX, pady=PADY, sticky="w")
+button_run.grid(row=18, column=3, padx=PADX, pady=PADY, sticky="w")
 
 switch_toggle_var = customtkinter.StringVar(value="Result1")
 switch_toggle = customtkinter.CTkSwitch(app, text="Toggle Result Images", command=switch_event, variable=switch_toggle_var, onvalue="Result1", offvalue="Result2")
-switch_toggle.grid(row=18, column=3, padx=PADX, pady=PADY, sticky="w")
+switch_toggle.grid(row=19, column=3, padx=PADX, pady=PADY, sticky="w")
 
-button_exit = customtkinter.CTkButton(app, text="EXIT", command=button_exit_callback)
-button_exit.grid(row=19, column=3, padx=PADX, pady=PADY, sticky="w")
+button_exit = customtkinter.CTkButton(app, text="EXIT", command=button_exit_callback, width=50)
+button_exit.grid(row=19, column=5, padx=PADX, pady=PADY, sticky="w")
 
 # Init
 init_parameters()
