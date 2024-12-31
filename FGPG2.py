@@ -99,7 +99,7 @@ def EdgeRoundCurve(M,E,X11,Y11,X_E,Y_E,X_E0,Y_E0,SEG_EDGE_R):
 def RootRoundCurve(M,Z,X,D,C,B,THETA_TE,ALPHA_TS,SEG_ROOT_R):
     THETA_T = np.linspace(0,THETA_TE,SEG_ROOT_R)
     if (C!=0) and ((D-X-C)==0) :
-        # mc를 반지름으로 하는 원호를 그려서 대체하게 됨
+        # mc瑜� 諛섏��由꾩쑝濡� �븯�뒗 �썝�샇瑜� 洹몃젮�꽌 ���泥댄븯寃� �맖
         THETA_S = (np.pi/2)*np.ones(len(THETA_T))
     elif (D-X-C)!=0 :
         THETA_S = np.arctan((M*Z*THETA_T/2)/(M*D-M*X-M*C))
@@ -357,8 +357,8 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
 ##############################
 
 # Gap between pads in customtkinter
-PADX = 5
-PADY = 2
+PADX = 1
+PADY = 1
 
 # Functions
 def init_parameters():
@@ -521,7 +521,7 @@ def button_run_callback():
     Result = os.path.join(WorkingDirectory, f'Result1.png')
     image_result = customtkinter.CTkImage(light_image=Image.open(Result), size=(500,500))
     label_image = customtkinter.CTkLabel(app, text="", image=image_result)
-    label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=13, columnspan=3)
+    label_image.grid(row=1, column=3, padx=PADX, pady=PADY, rowspan=16, columnspan=4)
     label_text.configure(text='Finished geneating')
 
 def switch_event():
@@ -533,7 +533,7 @@ def switch_event():
         Result = os.path.join(WorkingDirectory, f'Result2.png')
     image_result = customtkinter.CTkImage(light_image=Image.open(Result), size=(500,500))
     label_image = customtkinter.CTkLabel(app, text="", image=image_result)
-    label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=13, columnspan=3)
+    label_image.grid(row=1, column=3, padx=PADX, pady=PADY, rowspan=16, columnspan=4)
     label_text.configure(text='load Image : %s'%Result)
 
 def button_exit_callback():
@@ -545,12 +545,13 @@ def button_exit_callback():
 customtkinter.set_default_color_theme("green")
 app = customtkinter.CTk()
 app.title("FGPG2 with customtkinter")
-#app.geometry("640x480")
-#app.iconbitmap('FGPG2.ico')
-
+app.geometry("915x635")
+app.resizable(width=False, height=False)
+app.iconbitmap('FGPG2.ico')
+font16 = customtkinter.CTkFont(size=16)
 
 # Subject
-label_x0_1 = customtkinter.CTkLabel(app, text="# Gear Spec", fg_color="transparent", compound="right")
+label_x0_1 = customtkinter.CTkLabel(app, text="# Gear Spec", fg_color="transparent", compound="right", font=font16)
 label_x0_1.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="w")
 
 # Module, m
@@ -645,7 +646,7 @@ label_e2.grid(row=9, column=2, padx=PADX, pady=PADY, sticky="w")
 
 
 # Subject
-label_x0_1 = customtkinter.CTkLabel(app, text="# Graphics", fg_color="transparent", compound="right")
+label_x0_1 = customtkinter.CTkLabel(app, text="# Graphics", fg_color="transparent", compound="right", font=font16)
 label_x0_1.grid(row=10, column=0, padx=PADX, pady=PADY, sticky="w")
 
 # Center of Gear , x0
@@ -739,42 +740,38 @@ label_scale_2 = customtkinter.CTkLabel(app, text="0.1 ~ 1.0", fg_color="transpar
 label_scale_2.grid(row=19, column=2, padx=PADX, pady=PADY, sticky="w")
 
 
-# Subject
-label_x0_1 = customtkinter.CTkLabel(app, text="# Output", fg_color="transparent", compound="right")
-label_x0_1.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="w")
-
 # Working Directory
 label_wd = customtkinter.CTkLabel(app, text="Working Directory = ", fg_color="transparent", compound="right")
-label_wd.grid(row=1, column=3, padx=PADX, pady=PADY, sticky="e")
+label_wd.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="e")
 
 entry_wd = customtkinter.CTkEntry(app, placeholder_text="./Result/", width=300)
-entry_wd.grid(row=1, column=4, padx=PADX, pady=PADY)
+entry_wd.grid(row=0, column=4, padx=PADX, pady=PADY, columnspan=2)
 
 button_wd = customtkinter.CTkButton(app, text="Browse", command=button_wd_callback, width=50)
-button_wd.grid(row=1, column=5, padx=PADX, pady=PADY, sticky="w")
+button_wd.grid(row=0, column=6, padx=PADX, pady=PADY, sticky="w")
 
 # Output Image
 image_result = customtkinter.CTkImage(light_image=Image.open("./FGPG2.png"), size=(500,500))
 label_image = customtkinter.CTkLabel(app, text="", image=image_result, compound="left")
-label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=14, columnspan=3)
+label_image.grid(row=1, column=3, padx=PADX, pady=PADY, rowspan=16, columnspan=4)
 
 # Output Text
 label_text = customtkinter.CTkLabel(app, text="Output Text.............................", fg_color="transparent", compound="right")
-label_text.grid(row=16, column=3, padx=PADX, pady=PADY, sticky="w", columnspan=3)
+label_text.grid(row=17, column=3, padx=PADX, pady=PADY, sticky="w", columnspan=4)
 
 # Buttons
 button_load = customtkinter.CTkButton(app, text="LOAD", command=button_load_callback)
-button_load.grid(row=17, column=3, padx=PADX, pady=PADY, sticky="w")
+button_load.grid(row=18, column=3, padx=PADX, pady=PADY, sticky="w")
 
 button_run = customtkinter.CTkButton(app, text="RUN", command=button_run_callback)
-button_run.grid(row=18, column=3, padx=PADX, pady=PADY, sticky="w")
+button_run.grid(row=18, column=4, padx=PADX, pady=PADY, sticky="w")
 
 switch_toggle_var = customtkinter.StringVar(value="Result1")
-switch_toggle = customtkinter.CTkSwitch(app, text="Toggle Result Images", command=switch_event, variable=switch_toggle_var, onvalue="Result1", offvalue="Result2")
-switch_toggle.grid(row=19, column=3, padx=PADX, pady=PADY, sticky="w")
+switch_toggle = customtkinter.CTkSwitch(app, text="Toggle images", command=switch_event, variable=switch_toggle_var, onvalue="Result1", offvalue="Result2")
+switch_toggle.grid(row=18, column=5, padx=PADX, pady=PADY, sticky="w")
 
 button_exit = customtkinter.CTkButton(app, text="EXIT", command=button_exit_callback, width=50)
-button_exit.grid(row=19, column=5, padx=PADX, pady=PADY, sticky="w")
+button_exit.grid(row=18, column=6, padx=PADX, pady=PADY, sticky="w")
 
 # Init
 init_parameters()
