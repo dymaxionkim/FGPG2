@@ -1,10 +1,11 @@
+import customtkinter
+from customtkinter import filedialog
 import os
-import PySimpleGUI as sg
 import numpy as np
 import matplotlib.pyplot as plt
 import ezdxf
-
-sg.set_options(font=('D2Coding', 12))
+from PIL import Image
+import pandas
 
 ##############################
 """
@@ -197,11 +198,11 @@ def SaveDXF(X12,Y12,X22,Y22,X32,Y32,Z,X_0,Y_0,OUTER_DIA,ROOT_DIA,OFFSET_DIA):
     # Circle offset
     msp.add_circle((X_0,Y_0),radius=OFFSET_DIA/2)
     # Output
-    Result = os.path.join(values['-WorkingDirectoty-'], f'Result.dxf')
+    Result = os.path.join(WorkingDirectory, f'Result.dxf')
     doc.saveas(Result)
 
 def SaveSpec(M,ALPHA,Z,X,A,D,B,BASE_DIA,PITCH_DIA,OFFSET_DIA,ROOT_DIA,OUTER_DIA):
-    Result3 = os.path.join(values['-WorkingDirectoty-'], f'Result.csv')
+    Result3 = os.path.join(WorkingDirectory, f'Result.csv')
     fileout = open(Result3, "w")
     if ALPHA == 20 :
         fileout.write("Type,"+"Standard,\n")
@@ -352,100 +353,431 @@ def FGPG2_PLOT(M,Z,ALPHA,X,B,A,D,C,E,X_0,Y_0,SEG_CIRCLE,SEG_INVOLUTE,SEG_EDGE_R,
     # Save Gear Spec
     SaveSpec(M,ALPHA,Z,X,A,D,B,base_dia,pitch_dia,offset_dia,root_dia,outer_dia)
 
+
 ##############################
-# GUI
-LogoImage = './FGPG2.png'
-CurrentImage = 'Result'
-if not os.path.exists(LogoImage) :
+
+# Gap between pads in customtkinter
+PADX = 5
+PADY = 2
+
+# Functions
+def init_parameters():
+    entry_m.insert(0,1.0)
+    entry_z.insert(0,18)
+    entry_alpha.insert(0,20)
+    entry_x.insert(0,0.0)
+    entry_b.insert(0,0.05)
+    entry_a.insert(0,1.0)
+    entry_d.insert(0,1.25)
+    entry_c.insert(0,0.2)
+    entry_e.insert(0,0.1)
+    entry_x0.insert(0,0.0)
+    entry_y0.insert(0,0.0)
+    entry_seg_circle.insert(0,360)
+    entry_seg_involute.insert(0,15)
+    entry_seg_edge_r.insert(0,9)
+    entry_seg_root_r.insert(0,9)
+    entry_seg_outer.insert(0,5)
+    entry_seg_root.insert(0,5)
+    entry_scale.insert(0,0.7)
+    entry_wd.insert(0,"./Result")
+
+def read_parameters():
+    global m, z, alpha, x, b, a, d, c, e, x_0, y_0, seg_circle, seg_involute, seg_edge_r, seg_root_r, seg_outer, seg_root, scale, WorkingDirectory
+    m = float(entry_m.get())
+    z = int(entry_z.get())
+    alpha = float(entry_alpha.get())
+    x = float(entry_x.get())
+    b = float(entry_b.get())
+    a = float(entry_a.get())
+    d = float(entry_d.get())
+    c = float(entry_c.get())
+    e = float(entry_e.get())
+    x_0 = float(entry_x0.get())
+    y_0 = float(entry_y0.get())
+    seg_circle = int(entry_seg_circle.get())
+    seg_involute = int(entry_seg_involute.get())
+    seg_edge_r = int(entry_seg_edge_r.get())
+    seg_root_r = int(entry_seg_root_r.get())
+    seg_outer = int(entry_seg_outer.get())
+    seg_root = int(entry_seg_root.get())
+    scale = float(entry_scale.get())
+    WorkingDirectory = entry_wd.get()
+
+def load_parameters():
+    global m, z, alpha, x, b, a, d, c, e, x_0, y_0, seg_circle, seg_involute, seg_edge_r, seg_root_r, seg_outer, seg_root, scale, Inputs
+    parameters = pandas.read_csv(Inputs,index_col="parameter")
+    m = parameters.loc['m'].astype('float').values[0]
+    z = parameters.loc['z'].astype('int').values[0]
+    alpha = parameters.loc['alpha'].astype('float').values[0]
+    x = parameters.loc['x'].astype('float').values[0]
+    b = parameters.loc['b'].astype('float').values[0]
+    a = parameters.loc['a'].astype('float').values[0]
+    d = parameters.loc['d'].astype('float').values[0]
+    c = parameters.loc['c'].astype('float').values[0]
+    e = parameters.loc['e'].astype('float').values[0]
+    x_0 = parameters.loc['x_0'].astype('float').values[0]
+    y_0 = parameters.loc['y_0'].astype('float').values[0]
+    seg_circle = parameters.loc['seg_circle'].astype('int').values[0]
+    seg_involute = parameters.loc['seg_involute'].astype('int').values[0]
+    seg_edge_r = parameters.loc['seg_edge_r'].astype('int').values[0]
+    seg_root_r = parameters.loc['seg_root_r'].astype('int').values[0]
+    seg_outer = parameters.loc['seg_outer'].astype('int').values[0]
+    seg_root = parameters.loc['seg_root'].astype('int').values[0]
+    scale = parameters.loc['scale'].astype('float').values[0]
+    print(parameters)
+    # Apply into UI
+    entry_m.delete(0,last_index='end')
+    entry_m.insert(0,m)
+    entry_z.delete(0,last_index='end')
+    entry_z.insert(0,z)
+    entry_alpha.delete(0,last_index='end')
+    entry_alpha.insert(0,alpha)
+    entry_x.delete(0,last_index='end')
+    entry_x.insert(0,x)
+    entry_b.delete(0,last_index='end')
+    entry_b.insert(0,b)
+    entry_a.delete(0,last_index='end')
+    entry_a.insert(0,a)
+    entry_d.delete(0,last_index='end')
+    entry_d.insert(0,d)
+    entry_c.delete(0,last_index='end')
+    entry_c.insert(0,c)
+    entry_e.delete(0,last_index='end')
+    entry_e.insert(0,e)
+    entry_x0.delete(0,last_index='end')
+    entry_x0.insert(0,x_0)
+    entry_y0.delete(0,last_index='end')
+    entry_y0.insert(0,y_0)
+    entry_seg_circle.delete(0,last_index='end')
+    entry_seg_circle.insert(0,seg_circle)
+    entry_seg_involute.delete(0,last_index='end')
+    entry_seg_involute.insert(0,seg_involute)
+    entry_seg_edge_r.delete(0,last_index='end')
+    entry_seg_edge_r.insert(0,seg_edge_r)
+    entry_seg_root_r.delete(0,last_index='end')
+    entry_seg_root_r.insert(0,seg_root_r)
+    entry_seg_outer.delete(0,last_index='end')
+    entry_seg_outer.insert(0,seg_outer)
+    entry_seg_root.delete(0,last_index='end')
+    entry_seg_root.insert(0,seg_root)
+    entry_scale.delete(0,last_index='end')
+    entry_scale.insert(0,scale)
+
+def save_parameters():
+    global m, z, alpha, x, b, a, d, c, e, x_0, y_0, seg_circle, seg_involute, seg_edge_r, seg_root_r, seg_outer, seg_root, scale, WorkingDirectory
+    read_parameters()
+    Outputs = os.path.join(WorkingDirectory, f'Inputs.csv')
+    parameters = pandas.read_csv('parameters.csv',index_col="parameter")
+    parameters.loc['m',0] = m
+    parameters.loc['z',0] = z
+    parameters.loc['alpha',0] = alpha
+    parameters.loc['x',0] = x
+    parameters.loc['b',0] = b
+    parameters.loc['a',0] = a
+    parameters.loc['d',0] = d
+    parameters.loc['c',0] = c
+    parameters.loc['e',0] = e
+    parameters.loc['x_0',0] = x_0
+    parameters.loc['y_0',0] = y_0
+    parameters.loc['seg_circle',0] = seg_circle
+    parameters.loc['seg_involute',0] = seg_involute
+    parameters.loc['seg_edge_r',0] = seg_edge_r
+    parameters.loc['seg_root_r',0] = seg_root_r
+    parameters.loc['seg_outer',0] = seg_outer
+    parameters.loc['seg_root',0] = seg_root
+    parameters.loc['scale',0] = scale
+    parameters.to_csv(Outputs)
+    print(parameters)
+
+# Callback Functions
+def button_wd_callback():
+    print("button_wd pressed")
+    global WorkingDirectory
+    WorkingDirectory = filedialog.askdirectory()
+    entry_wd.delete(0,last_index='end')
+    entry_wd.insert(0,WorkingDirectory)
+    print('Working Directory : %s'%WorkingDirectory)
+    label_text.configure(text='Working Directory : %s'%WorkingDirectory)
+
+def button_load_callback():
+    print("button_load pressed")
+    global Inputs
+    read_parameters()
+    Inputs = os.path.join(WorkingDirectory, f'Inputs.csv')
+    if os.path.exists(Inputs) :
+        load_parameters()
+        label_text.configure(text='The File was loaded : %s'%Inputs)
+    else :
+        label_text.configure(text='The File is not exists : %s'%Inputs)
+
+def button_run_callback():
+    global label_image
+    print("button_run pressed")
+    read_parameters()
+    os.makedirs(WorkingDirectory, exist_ok=True)
+    FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_outer,seg_root,scale)
+    save_parameters()
+    Result = os.path.join(WorkingDirectory, f'Result1.png')
+    image_result = customtkinter.CTkImage(light_image=Image.open(Result), size=(500,500))
+    label_image = customtkinter.CTkLabel(app, text="", image=image_result)
+    label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=13, columnspan=3)
+    label_text.configure(text='Finished geneating')
+
+def switch_event():
+    global WorkingDirectory
+    print("switch toggled, current value:", switch_toggle_var.get())
+    if switch_toggle_var.get()=="Result1" :
+        Result = os.path.join(WorkingDirectory, f'Result1.png')
+    else :
+        Result = os.path.join(WorkingDirectory, f'Result2.png')
+    image_result = customtkinter.CTkImage(light_image=Image.open(Result), size=(500,500))
+    label_image = customtkinter.CTkLabel(app, text="", image=image_result)
+    label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=13, columnspan=3)
+    label_text.configure(text='load Image : %s'%Result)
+
+def button_exit_callback():
+    print("button_exit pressed")
     exit()
 
-sg.theme('DefaultNoMoreNagging')
+################
+# GUI
+customtkinter.set_default_color_theme("green")
+app = customtkinter.CTk()
+app.title("FGPG2 with customtkinter")
+#app.geometry("640x480")
+#app.iconbitmap('FGPG2.ico')
 
-Text_Width = 42
 
-left_col = [[sg.Text('1. Gear Spec',font='ARIAL 16')],
-            [sg.Text('Module, m =',size = (Text_Width,1)),sg.Input(1.0,key='-m-',size = (10,1)),sg.Text('[mm], (>0)')],
-            [sg.Text('Teeth Number, z =',size = (Text_Width,1)),sg.Input(+18,key='-z-',size = (10,1)),sg.Text('[ea], (+/-)')],
-            [sg.Text('Pressure Angle [Deg], alpha =',size = (Text_Width,1)),sg.Input(20.0,key='-alpha-',size = (10,1)),sg.Text('[deg]')],
-            [sg.Text('Offset Factor, x =',size = (Text_Width,1)),sg.Input(0.2,key='-x-',size = (10,1)),sg.Text('(-1~+1)')],
-            [sg.Text('Backlash Factor, b =',size = (Text_Width,1)),sg.Input(0.05,key='-b-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Addendum Factor, a =',size = (Text_Width,1)),sg.Input(1.0,key='-a-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Dedendum Factor, d =',size = (Text_Width,1)),sg.Input(1.25,key='-d-',size = (10,1)),sg.Text('(0~1)')],
-            [sg.Text('Radius Factor of Edge Round of Hob, c =',size = (Text_Width,1)),sg.Input(0.2,key='-c-',size = (10,1))],
-            [sg.Text('Radius Factor of Edge Round of Tooth, e =',size = (Text_Width,1)),sg.Input(0.1,key='-e-',size = (10,1))],
+# Subject
+label_x0_1 = customtkinter.CTkLabel(app, text="# Gear Spec", fg_color="transparent", compound="right")
+label_x0_1.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="w")
 
-            [sg.Text('2. Graphics',font='ARIAL 16')],
-            [sg.Text('Center of Gear, x_0 =',size = (Text_Width,1)),sg.Input(0.0,key='-x_0-',size = (10,1)),sg.Text('[mm]')],
-            [sg.Text('Center of Gear, y_0 =',size = (Text_Width,1)),sg.Input(0.0,key='-y_0-',size = (10,1)),sg.Text('[mm]')],
-            [sg.Text('Segmentation Numbers, seg_circle =',size = (Text_Width,1)),sg.Input(360,key='-seg_circle-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_involute =',size = (Text_Width,1)),sg.Input(15,key='-seg_involute-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_edge_r =',size = (Text_Width,1)),sg.Input(15,key='-seg_edge_r-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_root_r =',size = (Text_Width,1)),sg.Input(15,key='-seg_root_r-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_outer =',size = (Text_Width,1)),sg.Input(5,key='-seg_outer-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Segmentation Numbers, seg_root =',size = (Text_Width,1)),sg.Input(5,key='-seg_root-',size = (10,1)),sg.Text('[ea]')],
-            [sg.Text('Scale for One Tooth, scale =',size = (Text_Width,1)),sg.Input(0.7,key='-scale-',size = (10,1)),sg.Text('(0.1~1)')]]
+# Module, m
+label_m1 = customtkinter.CTkLabel(app, text="Module, m = ", fg_color="transparent", compound="right")
+label_m1.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="e")
 
-right_col = [[sg.Text('Working Directory :',size=(int(Text_Width/2),1)), sg.Input('./Result/',key='-WorkingDirectoty-',size=(30,1)), sg.FolderBrowse()],
-            [sg.Image(LogoImage,size=(500,500),key='-IMAGE-')],
-            [sg.Text('Hello',key='-TEXT-')],
-            [sg.Button('Load'), sg.Button('Run'), sg.Button('Toggle'), sg.Button('Exit')]]
+entry_m = customtkinter.CTkEntry(app, placeholder_text="1.0")
+entry_m.grid(row=1, column=1, padx=PADX, pady=PADY)
 
-layout = [[sg.Column(left_col), sg.VSeperator(), sg.Column(right_col)]]
-window = sg.Window('FGPG2', layout, icon="FGPG2.ico")
+label_m2 = customtkinter.CTkLabel(app, text="[mm] > 0", fg_color="transparent", compound="left")
+label_m2.grid(row=1, column=2, padx=PADX, pady=PADY, sticky="w")
 
-while True:
-    event, values = window.read()
+# Teeth Number, z
+label_z1 = customtkinter.CTkLabel(app, text="Teeth Number, z = ", fg_color="transparent", compound="right")
+label_z1.grid(row=2, column=0, padx=PADX, pady=PADY, sticky="e")
 
-    try:
-        m = float(values['-m-'])
-        z = int(values['-z-'])
-        alpha = float(values['-alpha-'])
-        x = float(values['-x-'])
-        b = float(values['-b-'])
-        a = float(values['-a-'])
-        d = float(values['-d-'])
-        c = float(values['-c-'])
-        e = float(values['-e-'])
-        x_0 = float(values['-x_0-'])
-        y_0 = float(values['-y_0-'])
-        seg_circle = int(values['-seg_circle-'])
-        seg_involute = int(values['-seg_involute-'])
-        seg_edge_r = int(values['-seg_edge_r-'])
-        seg_root_r = int(values['-seg_root_r-'])
-        seg_outer = int(values['-seg_outer-'])
-        seg_root = int(values['-seg_root-'])
-        scale = float(values['-scale-'])
-        WorkingDirectory = values['-WorkingDirectoty-']
-    except:
-        sg.popup('Type error.')
+entry_z = customtkinter.CTkEntry(app, placeholder_text="18")
+entry_z.grid(row=2, column=1, padx=PADX, pady=PADY)
 
-    if event in (sg.WIN_CLOSED, 'Exit'):
-        break
-    elif event == 'Load':
-        Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
-        if os.path.exists(Inputs) :
-            window.load_from_disk(Inputs)
-            window['-TEXT-'].update('Load : OK')
-        else :
-            sg.popup('The File not exists : %s'%Inputs)
-    elif event == 'Run':
-        os.makedirs(WorkingDirectory, exist_ok=True)
-        FGPG2_PLOT(m,z,alpha,x,b,a,d,c,e,x_0,y_0,seg_circle,seg_involute,seg_edge_r,seg_root_r,seg_outer,seg_root,scale)
-        Result = os.path.join(WorkingDirectory, f'Result1.png')
-        window['-IMAGE-'].update(Result,size=(500,500))
-        Inputs = os.path.join(WorkingDirectory, f'Inputs.dat')
-        window.save_to_disk(Inputs)
-        window['-TEXT-'].update('Run : OK')
-    elif event == 'Toggle':
-        if CurrentImage == 'Result':
-            Result = os.path.join(WorkingDirectory, f'Result2.png')
-            CurrentImage = 'Result2'
-            window['-IMAGE-'].update(Result,size=(500,500))
-            window['-TEXT-'].update('Toggle to One Tooth : OK')
-        elif CurrentImage == 'Result2':
-            Result = os.path.join(WorkingDirectory, f'Result1.png')
-            CurrentImage = 'Result'
-            window['-IMAGE-'].update(Result,size=(500,500))
-            window['-TEXT-'].update('Toggle to Whole Gear : OK')
+label_z2 = customtkinter.CTkLabel(app, text="[ea] : - for Internal", fg_color="transparent", compound="left")
+label_z2.grid(row=2, column=2, padx=PADX, pady=PADY, sticky="w")
 
-window.close()
+# Pressure Angle, alpha
+label_alpha1 = customtkinter.CTkLabel(app, text="Pressure Angle, alpha = ", fg_color="transparent", compound="right")
+label_alpha1.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_alpha = customtkinter.CTkEntry(app, placeholder_text="18")
+entry_alpha.grid(row=3, column=1, padx=PADX, pady=PADY)
+
+label_alpha2 = customtkinter.CTkLabel(app, text="[deg] : 20 for Standard", fg_color="transparent", compound="left")
+label_alpha2.grid(row=3, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Offset Factor, x
+label_x1 = customtkinter.CTkLabel(app, text="Offset Factor, x = ", fg_color="transparent", compound="right")
+label_x1.grid(row=4, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_x = customtkinter.CTkEntry(app, placeholder_text="0.0")
+entry_x.grid(row=4, column=1, padx=PADX, pady=PADY)
+
+label_x2 = customtkinter.CTkLabel(app, text="-1.0 ~ +1.0", fg_color="transparent", compound="left")
+label_x2.grid(row=4, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Backlash Factor, b
+label_b1 = customtkinter.CTkLabel(app, text="Backlash Factor, b = ", fg_color="transparent", compound="right")
+label_b1.grid(row=5, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_b = customtkinter.CTkEntry(app, placeholder_text="0.0")
+entry_b.grid(row=5, column=1, padx=PADX, pady=PADY)
+
+label_b2 = customtkinter.CTkLabel(app, text="0.0 ~ +1.0", fg_color="transparent", compound="left")
+label_b2.grid(row=5, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Addendum Factor, a
+label_a1 = customtkinter.CTkLabel(app, text="Addendum Factor, a = ", fg_color="transparent", compound="right")
+label_a1.grid(row=6, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_a = customtkinter.CTkEntry(app, placeholder_text="1.0")
+entry_a.grid(row=6, column=1, padx=PADX, pady=PADY)
+
+label_a2 = customtkinter.CTkLabel(app, text="1.0 for Standard", fg_color="transparent", compound="left")
+label_a2.grid(row=6, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Dedendum Factor, d
+label_d1 = customtkinter.CTkLabel(app, text="Dedendum Factor, d = ", fg_color="transparent", compound="right")
+label_d1.grid(row=7, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_d = customtkinter.CTkEntry(app, placeholder_text="1.25")
+entry_d.grid(row=7, column=1, padx=PADX, pady=PADY)
+
+label_d2 = customtkinter.CTkLabel(app, text="1.25 for Standard", fg_color="transparent", compound="left")
+label_d2.grid(row=7, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Radius of Hob end, c
+label_c1 = customtkinter.CTkLabel(app, text="Radius of Hob end, c = ", fg_color="transparent", compound="right")
+label_c1.grid(row=8, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_c = customtkinter.CTkEntry(app, placeholder_text="0.2")
+entry_c.grid(row=8, column=1, padx=PADX, pady=PADY)
+
+label_c2 = customtkinter.CTkLabel(app, text="[mm]", fg_color="transparent", compound="left")
+label_c2.grid(row=8, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Radius of Tooth end, e
+label_e1 = customtkinter.CTkLabel(app, text="Radius of Tooth end, e = ", fg_color="transparent", compound="right")
+label_e1.grid(row=9, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_e = customtkinter.CTkEntry(app, placeholder_text="0.1")
+entry_e.grid(row=9, column=1, padx=PADX, pady=PADY)
+
+label_e2 = customtkinter.CTkLabel(app, text="[mm]", fg_color="transparent", compound="left")
+label_e2.grid(row=9, column=2, padx=PADX, pady=PADY, sticky="w")
+
+
+# Subject
+label_x0_1 = customtkinter.CTkLabel(app, text="# Graphics", fg_color="transparent", compound="right")
+label_x0_1.grid(row=10, column=0, padx=PADX, pady=PADY, sticky="w")
+
+# Center of Gear , x0
+label_x0_1 = customtkinter.CTkLabel(app, text="x0 = ", fg_color="transparent", compound="right")
+label_x0_1.grid(row=11, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_x0 = customtkinter.CTkEntry(app, placeholder_text="0.0")
+entry_x0.grid(row=11, column=1, padx=PADX, pady=PADY)
+
+label_x0_2 = customtkinter.CTkLabel(app, text="[mm]", fg_color="transparent", compound="left")
+label_x0_2.grid(row=11, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Center of Gear , y0
+label_y0_1 = customtkinter.CTkLabel(app, text="y0 = ", fg_color="transparent", compound="right")
+label_y0_1.grid(row=12, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_y0 = customtkinter.CTkEntry(app, placeholder_text="0.0")
+entry_y0.grid(row=12, column=1, padx=PADX, pady=PADY)
+
+label_y0_2 = customtkinter.CTkLabel(app, text="[mm]", fg_color="transparent", compound="left")
+label_y0_2.grid(row=12, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Segmentations , seg_circle
+label_seg_circle_1 = customtkinter.CTkLabel(app, text="seg_circle = ", fg_color="transparent", compound="right")
+label_seg_circle_1.grid(row=13, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_seg_circle = customtkinter.CTkEntry(app, placeholder_text="360")
+entry_seg_circle.grid(row=13, column=1, padx=PADX, pady=PADY)
+
+label_seg_circle_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparent", compound="left")
+label_seg_circle_2.grid(row=13, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Segmentations , seg_involute
+label_seg_involute_1 = customtkinter.CTkLabel(app, text="seg_involute = ", fg_color="transparent", compound="right")
+label_seg_involute_1.grid(row=14, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_seg_involute = customtkinter.CTkEntry(app, placeholder_text="15")
+entry_seg_involute.grid(row=14, column=1, padx=PADX, pady=PADY)
+
+label_seg_involute_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparent", compound="left")
+label_seg_involute_2.grid(row=14, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Segmentations , seg_edge_r
+label_seg_edge_r_1 = customtkinter.CTkLabel(app, text="seg_edge_r = ", fg_color="transparent", compound="right")
+label_seg_edge_r_1.grid(row=15, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_seg_edge_r = customtkinter.CTkEntry(app, placeholder_text="9")
+entry_seg_edge_r.grid(row=15, column=1, padx=PADX, pady=PADY)
+
+label_seg_edge_r_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparent", compound="left")
+label_seg_edge_r_2.grid(row=15, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Segmentations , seg_root_r
+label_seg_root_r_1 = customtkinter.CTkLabel(app, text="seg_root_r = ", fg_color="transparent", compound="right")
+label_seg_root_r_1.grid(row=16, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_seg_root_r = customtkinter.CTkEntry(app, placeholder_text="9")
+entry_seg_root_r.grid(row=16, column=1, padx=PADX, pady=PADY)
+
+label_seg_root_r_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparent", compound="left")
+label_seg_root_r_2.grid(row=16, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Segmentations , seg_outer
+label_seg_outer_1 = customtkinter.CTkLabel(app, text="seg_outer = ", fg_color="transparent", compound="right")
+label_seg_outer_1.grid(row=17, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_seg_outer = customtkinter.CTkEntry(app, placeholder_text="5")
+entry_seg_outer.grid(row=17, column=1, padx=PADX, pady=PADY)
+
+label_seg_outer_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparent", compound="left")
+label_seg_outer_2.grid(row=17, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Segmentations , seg_root
+label_seg_root_1 = customtkinter.CTkLabel(app, text="seg_root = ", fg_color="transparent", compound="right")
+label_seg_root_1.grid(row=18, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_seg_root = customtkinter.CTkEntry(app, placeholder_text="5")
+entry_seg_root.grid(row=18, column=1, padx=PADX, pady=PADY)
+
+label_seg_root_2 = customtkinter.CTkLabel(app, text="[ea]", fg_color="transparent", compound="left")
+label_seg_root_2.grid(row=18, column=2, padx=PADX, pady=PADY, sticky="w")
+
+# Scale for one tooth , scale
+label_scale_1 = customtkinter.CTkLabel(app, text="seg_root = ", fg_color="transparent", compound="right")
+label_scale_1.grid(row=19, column=0, padx=PADX, pady=PADY, sticky="e")
+
+entry_scale = customtkinter.CTkEntry(app, placeholder_text="0.7")
+entry_scale.grid(row=19, column=1, padx=PADX, pady=PADY)
+
+label_scale_2 = customtkinter.CTkLabel(app, text="0.1 ~ 1.0", fg_color="transparent", compound="left")
+label_scale_2.grid(row=19, column=2, padx=PADX, pady=PADY, sticky="w")
+
+
+# Subject
+label_x0_1 = customtkinter.CTkLabel(app, text="# Output", fg_color="transparent", compound="right")
+label_x0_1.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="w")
+
+# Working Directory
+label_wd = customtkinter.CTkLabel(app, text="Working Directory = ", fg_color="transparent", compound="right")
+label_wd.grid(row=1, column=3, padx=PADX, pady=PADY, sticky="e")
+
+entry_wd = customtkinter.CTkEntry(app, placeholder_text="./Result/", width=300)
+entry_wd.grid(row=1, column=4, padx=PADX, pady=PADY)
+
+button_wd = customtkinter.CTkButton(app, text="Browse", command=button_wd_callback, width=50)
+button_wd.grid(row=1, column=5, padx=PADX, pady=PADY, sticky="w")
+
+# Output Image
+image_result = customtkinter.CTkImage(light_image=Image.open("./FGPG2.png"), size=(500,500))
+label_image = customtkinter.CTkLabel(app, text="", image=image_result, compound="left")
+label_image.grid(row=2, column=3, padx=PADX, pady=PADY, rowspan=13, columnspan=3)
+
+# Output Text
+label_text = customtkinter.CTkLabel(app, text="Output Text.............................", fg_color="transparent", compound="right")
+label_text.grid(row=15, column=3, padx=PADX, pady=PADY, sticky="w", columnspan=3)
+
+# Buttons
+button_load = customtkinter.CTkButton(app, text="LOAD", command=button_load_callback)
+button_load.grid(row=16, column=3, padx=PADX, pady=PADY, sticky="w")
+
+button_run = customtkinter.CTkButton(app, text="RUN", command=button_run_callback)
+button_run.grid(row=17, column=3, padx=PADX, pady=PADY, sticky="w")
+
+switch_toggle_var = customtkinter.StringVar(value="Result1")
+switch_toggle = customtkinter.CTkSwitch(app, text="Toggle Result Images", command=switch_event, variable=switch_toggle_var, onvalue="Result1", offvalue="Result2")
+switch_toggle.grid(row=18, column=3, padx=PADX, pady=PADY, sticky="w")
+
+button_exit = customtkinter.CTkButton(app, text="EXIT", command=button_exit_callback)
+button_exit.grid(row=19, column=3, padx=PADX, pady=PADY, sticky="w")
+
+# Init
+init_parameters()
+read_parameters()
+
+app.mainloop()

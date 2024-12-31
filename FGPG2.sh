@@ -7,5 +7,5 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 pyenv activate py39
-python FGPG3.py
+python FGPG2.py
 pyenv deactivate py39
