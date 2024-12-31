@@ -35,7 +35,8 @@ python FGPG2.py
 * Install some libraries :
 
 ```
-conda install numpy matplotlib pandas ezdxf customtkinter
+conda install numpy matplotlib pandas ezdxf
+pip install customtkinter
 ```
 
 * Clone this repository by git
