@@ -546,7 +546,7 @@ def button_exit_callback():
 customtkinter.set_default_color_theme("green")
 app = customtkinter.CTk()
 app.title("FGPG2 with customtkinter")
-app.geometry("915x635")
+app.geometry("950x650")
 app.resizable(width=False, height=False)
 font16 = customtkinter.CTkFont(size=16)
 if ( sys.platform.startswith('win')): app.iconbitmap('FGPG2.ico')
