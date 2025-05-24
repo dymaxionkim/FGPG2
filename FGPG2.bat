@@ -1,7 +1,8 @@
 REM Python Environment
 REM set root=%USERPROFILE%\anaconda3
 REM set root=%ProgramData%\anaconda3
-set root=%USERPROFILE%\scoop\apps\miniconda3\current
+REM set root=%USERPROFILE%\scoop\apps\miniconda3\current
+set root=%USERPROFILE%\miniforge3
 
 call %root%\Scripts\activate.bat %root%
 REM call conda env list
