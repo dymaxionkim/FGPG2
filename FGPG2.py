@@ -548,7 +548,7 @@ def button_exit_callback():
 # GUI
 app = tkinter.Tk()
 app.title("FGPG3 with tkinter")
-app.geometry("1100x650")
+#app.geometry("1100x650")
 app.resizable(width=False, height=False)
 font16 = tkinter.font.Font(size=16)
 if ( sys.platform.startswith('win')): app.iconbitmap('FGPG2.ico')
