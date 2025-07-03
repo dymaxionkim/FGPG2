@@ -1,77 +1,9 @@
 # FGPG2
 
-_Fine Involute Gear Profile Generator 2 - with python3_
+_Fine Involute Gear Profile Generator 2 - with python3_and uv package manager
 
-* Now I changed GUI system from pysimplegui to customtkinter.
-
-
-
-## Using on Linux
-
-* **Anaconda3** has Tk font problem.
-* In **pyenv** Environment
-
-```bash
-pyenv install 3.9.21
-pyenv virtualenv 3.9.21 py39
-pyenv activate py39
-
-pip install numpy
-pip install matplotlib
-pip install pandas
-pip install ezdxf
-pip install customtkinter
-
-# Test Executing
-python FGPG2.py
-
-# Execute by shell script
-./FGPG2.sh
-```
-
-## Using on MS Windows
-
-* Install python3 and git
-* Install some libraries :
-
-```
-conda install numpy matplotlib pandas ezdxf
-pip install customtkinter
-```
-
-* Clone this repository by git
-* Run :
-
-```
-python FGPG2.py
-```
 
 ![](./img/Screenshot_GUI.png)
-
-
-
-## Build exe in MS Windows 11
-
-* Development version of pyinstaller is needed because of matplotlib matching issue.
-
-```
-pip install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
-pyinstaller --icon=FGPG2.ico -w -F FGPG2.py
-copy .\FGPG2.png .\dist\FGPG2.png 
-```
-
-## Using on Android Device by Pydroid3
-
-* Install [Pydroid3](https://play.google.com/store/apps/details?id=ru.iiec.pydroid3&hl=ko&gl=US) in PlayStore
-* Install some libraries by Pip menu in Pydroid3 (numpy, matplotlib, ezdxf, pysimplegui)
-* Install [mgit](https://play.google.com/store/apps/details?id=com.manichord.mgit&hl=ko&gl=US) in PlayStore
-* Clone this repository
-* Load FGPG2.py and run
-
-![](./img/Screenshot_Pydroid3.jpg)
-
-![](./img/Screenshot_Android.jpg)
-
 
 
 ## UI Buttons
