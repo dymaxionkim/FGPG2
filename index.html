@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FGPG3 - Web Version</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 10px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .control-group {
+            display: grid;
+            grid-template-columns: 220px 100px 1fr;
+            gap: 5px;
+            align-items: center;
+        }
+        .control-group label {
+            text-align: right;
+            font-weight: bold;
+        }
+        .control-group input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .control-group .unit {
+            font-size: 0.9em;
+            color: #555;
+        }
+        h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: row; /* Arrange chart and spec side-by-side */
+            gap: 20px;
+            flex-grow: 1;
+        }
+        .chart-and-output-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chart-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+        }
+        .spec-container {
+            width: 350px; /* Width for the spec table */
+            height: 500px; /* Match chart height */
+            overflow-y: auto; /* Enable vertical scroll */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .spec-table th, .spec-table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+        .spec-table th {
+            background-color: #eee;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button, #file-input-label {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #eee;
+        }
+        button:hover, #file-input-label:hover {
+            background-color: #ddd;
+        }
+        #file-input {
+            display: none;
+        }
+        #outputText {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h3># Gear Spec</h3>
+        <div class="control-group">
+            <label for="m">Module, m =</label>
+            <input type="number" id="m" value="1.0">
+            <span class="unit">[mm] > 0</span>
+        </div>
+        <div class="control-group">
+            <label for="z">Teeth Number, z =</label>
+            <input type="number" id="z" value="18">
+            <span class="unit">[ea] : - for Internal</span>
+        </div>
+        <div class="control-group">
+            <label for="alpha">Pressure Angle, alpha =</label>
+            <input type="number" id="alpha" value="20">
+            <span class="unit">[deg] : 20 for Standard</span>
+        </div>
+        <div class="control-group">
+            <label for="x">Offset Factor, x =</label>
+            <input type="number" id="x" value="0.0">
+            <span class="unit">-1.0 ~ +1.0</span>
+        </div>
+        <div class="control-group">
+            <label for="b">Backlash Factor, b =</label>
+            <input type="number" id="b" value="0.05">
+            <span class="unit">0.0 ~ +1.0</span>
+        </div>
+        <div class="control-group">
+            <label for="a">Addendum Factor, a =</label>
+            <input type="number" id="a" value="1.0">
+            <span class="unit">1.0 for Standard</span>
+        </div>
+        <div class="control-group">
+            <label for="d">Dedendum Factor, d =</label>
+            <input type="number" id="d" value="1.25">
+            <span class="unit">1.25 for Standard</span>
+        </div>
+        <div class="control-group">
+            <label for="c">Radius of Hob end, c =</label>
+            <input type="number" id="c" value="0.2">
+            <span class="unit">[mm]</span>
+        </div>
+        <div class="control-group">
+            <label for="e">Radius of Tooth end, e =</label>
+            <input type="number" id="e" value="0.1">
+            <span class="unit">[mm]</span>
+        </div>
+
+        <h3># Graphics</h3>
+        <div class="control-group">
+            <label for="x0">x0 =</label>
+            <input type="number" id="x0" value="0.0">
+            <span class="unit">[mm]</span>
+        </div>
+        <div class="control-group">
+            <label for="y0">y0 =</label>
+            <input type="number" id="y0" value="0.0">
+            <span class="unit">[mm]</span>
+        </div>
+        <div class="control-group">
+            <label for="seg_circle">seg_circle =</label>
+            <input type="number" id="seg_circle" value="360">
+            <span class="unit">[ea]</span>
+        </div>
+        <div class="control-group">
+            <label for="seg_involute">seg_involute =</label>
+            <input type="number" id="seg_involute" value="15">
+            <span class="unit">[ea]</span>
+        </div>
+        <div class="control-group">
+            <label for="seg_edge_r">seg_edge_r =</label>
+            <input type="number" id="seg_edge_r" value="5">
+            <span class="unit">[ea]</span>
+        </div>
+        <div class="control-group">
+            <label for="seg_root_r">seg_root_r =</label>
+            <input type="number" id="seg_root_r" value="5">
+            <span class="unit">[ea]</span>
+        </div>
+        <div class="control-group">
+            <label for="seg_outer">seg_outer =</label>
+            <input type="number" id="seg_outer" value="5">
+            <span class="unit">[ea]</span>
+        </div>
+        <div class="control-group">
+            <label for="seg_root">seg_root =</label>
+            <input type="number" id="seg_root" value="5">
+            <span class="unit">[ea]</span>
+        </div>
+        <div class="control-group">
+            <label for="scale">scale =</label>
+            <input type="number" id="scale" value="0.7">
+            <span class="unit">0.1 ~ 1.0</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="chart-and-output-container">
+            <div class="chart-container">
+                <canvas id="gearChart"></canvas>
+            </div>
+            <div id="outputText">Output Text.............................</div>
+            <div class="button-group">
+                <input type="file" id="file-input" accept=".csv">
+                <label for="file-input" id="file-input-label">LOAD CSV</label>
+                <button id="run-button">RUN</button>
+                <button id="save-params-button">SAVE PARAMS</button>
+                <button id="save-spec-button">SAVE SPEC</button>
+                <button id="save-dxf-button">SAVE DXF</button>
+                <button id="save-png-button">SAVE PNG</button>
+                <label><input type="checkbox" id="toggle-view"> Zoom on Tooth</label>
+            </div>
+        </div>
+        <div class="spec-container" id="spec-container">
+            <h3># Gear Specifications</h3>
+            <table class="spec-table" id="spec-table">
+                <!-- Content will be generated by JavaScript -->
+            </table>
+        </div>
+    </div>
+
+<script>
+// --- Polyfills and Helpers ---
+function linspace(start, stop, num) {
+    const arr = [];
+    const step = (stop - start) / (num - 1);
+    for (let i = 0; i < num; i++) {
+        arr.push(start + (step * i));
+    }
+    return arr;
+}
+
+// --- Core Calculation Functions (Translated from Python) ---
+function Internal(Z, X, B, A, D, C, E) {
+    if (Z < 0) {
+        Z = -Z;
+        X = -X;
+        B = -B;
+        let A_temp = A;
+        let D_temp = D;
+        A = D_temp;
+        D = A_temp;
+        let C_temp = C;
+        let E_temp = E;
+        C = E_temp;
+        E = C_temp;
+    }
+    return { Z, X, B, A, D, C, E };
+}
+
+function Parameters(M, Z, ALPHA, X, B, A, D, C, E) {
+    const ALPHA_0 = ALPHA * (2 * Math.PI / 360);
+    const ALPHA_M = Math.PI / Z;
+    const ALPHA_IS = ALPHA_0 + Math.PI / (2 * Z) + B / (Z * Math.cos(ALPHA_0)) - (1 + 2 * X / Z) * Math.tan(ALPHA_0);
+    const THETA_IS = Math.tan(ALPHA_0) + 2 * (C * (1 - Math.sin(ALPHA_0)) + X - D) / (Z * Math.cos(ALPHA_0) * Math.sin(ALPHA_0));
+    const THETA_IE = 2 * E / (Z * Math.cos(ALPHA_0)) + Math.sqrt(Math.pow((Z + 2 * (X + A - E)) / (Z * Math.cos(ALPHA_0)), 2) - 1);
+    let alpha_e_calc = ALPHA_IS + THETA_IE - Math.atan(Math.sqrt(Math.pow((Z + 2 * (X + A - E)) / (Z * Math.cos(ALPHA_0)), 2) - 1));
+    const X_E = M * ((Z / 2) + X + A) * Math.cos(alpha_e_calc);
+    const Y_E = M * ((Z / 2) + X + A) * Math.sin(alpha_e_calc);
+    const X_E0 = M * (Z / 2 + X + A - E) * Math.cos(alpha_e_calc);
+    const Y_E0 = M * (Z / 2 + X + A - E) * Math.sin(alpha_e_calc);
+    const ALPHA_TS = (2 * (C * (1 - Math.sin(ALPHA_0)) - D) * Math.sin(ALPHA_0) + B) / (Z * Math.cos(ALPHA_0)) - 2 * C * Math.cos(ALPHA_0) / Z + Math.PI / (2 * Z);
+    const THETA_TE = 2 * C * Math.cos(ALPHA_0) / Z - 2 * (D - X - C * (1 - Math.sin(ALPHA_0))) * Math.cos(ALPHA_0) / (Z * Math.sin(ALPHA_0));
+
+    if ((alpha_e_calc > ALPHA_M) && (ALPHA_M > ALPHA_IS + THETA_IE - Math.atan(THETA_IE))) {
+        E = (E / 2) * Math.cos(ALPHA_0) * (THETA_IE - Math.sqrt(Math.pow(1 / Math.cos(ALPHA_IS + THETA_IE - ALPHA_M), 2) - 1));
+    }
+    const P_ANGLE = 2 * Math.PI / Z;
+    const ALIGN_ANGLE = Math.PI / 2 - Math.PI / Z;
+    return { ALPHA_0, ALPHA_M, ALPHA_IS, THETA_IS, THETA_IE, ALPHA_E: alpha_e_calc, X_E, Y_E, X_E0, Y_E0, ALPHA_TS, THETA_TE, E, P_ANGLE, ALIGN_ANGLE };
+}
+
+function SymetryY(XX, YY) {
+    const XX2 = [...XX].reverse();
+    const YY2 = [...YY].reverse().map(y => -y);
+    return { XX2, YY2 };
+}
+
+function InvoluteCurve(M, Z, SEG_INVOLUTE, THETA_IS, THETA_IE, ALPHA_0, ALPHA_IS) {
+    const THETA1 = linspace(THETA_IS, THETA_IE, SEG_INVOLUTE);
+    const X11 = THETA1.map(t => (1 / 2) * M * Z * Math.cos(ALPHA_0) * Math.sqrt(1 + t * t) * Math.cos(ALPHA_IS + t - Math.atan(t)));
+    const Y11 = THETA1.map(t => (1 / 2) * M * Z * Math.cos(ALPHA_0) * Math.sqrt(1 + t * t) * Math.sin(ALPHA_IS + t - Math.atan(t)));
+    return { X11, Y11 };
+}
+
+function EdgeRoundCurve(M, E, X11, Y11, X_E, Y_E, X_E0, Y_E0, SEG_EDGE_R) {
+    const THETA3_MIN = Math.atan2((Y11[Y11.length - 1] - Y_E0), (X11[X11.length - 1] - X_E0));
+    const THETA3_MAX = Math.atan2((Y_E - Y_E0), (X_E - X_E0));
+    const THETA3 = linspace(THETA3_MIN, THETA3_MAX, SEG_EDGE_R);
+    const X21 = THETA3.map(t => M * E * Math.cos(t) + X_E0);
+    const Y21 = THETA3.map(t => M * E * Math.sin(t) + Y_E0);
+    return { X21, Y21 };
+}
+
+function RootRoundCurve(M, Z, X, D, C, B, THETA_TE, ALPHA_TS, SEG_ROOT_R) {
+    const THETA_T = linspace(0, THETA_TE, SEG_ROOT_R);
+    let THETA_S;
+    if (C !== 0 && (D - X - C) === 0) {
+        THETA_S = Array(THETA_T.length).fill(Math.PI / 2);
+    } else if ((D - X - C) !== 0) {
+        THETA_S = THETA_T.map(t => Math.atan((M * Z * t / 2) / (M * D - M * X - M * C)));
+    } else {
+        THETA_S = Array(THETA_T.length).fill(0);
+    }
+    const X31 = THETA_T.map((t, i) => M * ((Z / 2 + X - D + C) * Math.cos(t + ALPHA_TS) + (Z / 2) * t * Math.sin(t + ALPHA_TS) - C * Math.cos(THETA_S[i] + t + ALPHA_TS)));
+    const Y31 = THETA_T.map((t, i) => M * ((Z / 2 + X - D + C) * Math.sin(t + ALPHA_TS) - (Z / 2) * t * Math.cos(t + ALPHA_TS) - C * Math.sin(THETA_S[i] + t + ALPHA_TS)));
+    return { X31, Y31 };
+}
+
+function OuterArc(M, Z, X, A, ALPHA_E, ALPHA_M, SEG_OUTER) {
+    const THETA6 = linspace(ALPHA_E, ALPHA_M, SEG_OUTER);
+    const radius = M * (Z / 2 + A + X);
+    const X41 = THETA6.map(t => radius * Math.cos(t));
+    const Y41 = THETA6.map(t => radius * Math.sin(t));
+    return { X41, Y41 };
+}
+
+function RootArc(M, Z, X, D, ALPHA_TS, SEG_ROOT) {
+    const THETA7 = linspace(0, ALPHA_TS, SEG_ROOT);
+    const radius = M * (Z / 2 - D + X);
+    const X51 = THETA7.map(t => radius * Math.cos(t));
+    const Y51 = THETA7.map(t => radius * Math.sin(t));
+    return { X51, Y51 };
+}
+
+function CombineTooth(X11, Y11, X21, Y21, X31, Y31, X41, Y41, X51, Y51, X12, Y12, X22, Y22, X32, Y32, X42, Y42, X52, Y52) {
+    const X1 = [...X42, ...X22.slice(1), ...X12.slice(1), ...X32.slice(1), ...X52, ...X51.slice(1), ...X31.slice(1), ...X11.slice(1), ...X21.slice(1), ...X41];
+    const Y1 = [...Y42, ...Y22.slice(1), ...Y12.slice(1), ...Y32.slice(1), ...Y52, ...Y51.slice(1), ...Y31.slice(1), ...Y11.slice(1), ...Y21.slice(1), ...Y41];
+    return { X1, Y1 };
+}
+
+function Transform(Xtemp, Ytemp, X_0, Y_0) {
+    const Xt = Xtemp.map(x => x + X_0);
+    const Yt = Ytemp.map(y => y + Y_0);
+    return { Xt, Yt };
+}
+
+function Rotation(Xtemp, Ytemp, ANGLE) {
+    const XX = Xtemp.map((x, i) => Math.cos(ANGLE) * x - Math.sin(ANGLE) * Ytemp[i]);
+    const YY = Xtemp.map((x, i) => Math.sin(ANGLE) * x + Math.cos(ANGLE) * Ytemp[i]);
+    return { XX, YY };
+}
+
+function Circle(DIA, SEG_CIRCLE, X_0 = 0, Y_0 = 0) {
+    const THETA0 = linspace(0, 2 * Math.PI, SEG_CIRCLE);
+    const XX = THETA0.map(t => DIA / 2 * Math.sin(t) + X_0);
+    const YY = THETA0.map(t => DIA / 2 * Math.cos(t) + Y_0);
+    return { XX, YY };
+}
+
+// --- UI and Plotting ---
+const ctx = document.getElementById('gearChart').getContext('2d');
+let gearChart = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: [] },
+    options: {
+        maintainAspectRatio: false,
+        aspectRatio: 1,
+        scales: {
+            x: { type: 'linear', position: 'bottom', ticks: { autoSkip: true } },
+            y: { type: 'linear', ticks: { autoSkip: true } }
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+        },
+        elements: {
+            point: { radius: 0 },
+            line: { borderWidth: 1.5 }
+        },
+        animation: false
+    }
+});
+
+function getParams() {
+    const ids = ["m", "z", "alpha", "x", "b", "a", "d", "c", "e", "x0", "y0", "seg_circle", "seg_involute", "seg_edge_r", "seg_root_r", "seg_outer", "seg_root", "scale"];
+    const params = {};
+    ids.forEach(id => {
+        params[id] = parseFloat(document.getElementById(id).value);
+    });
+    // Ensure integer params are integers
+    ["z", "seg_circle", "seg_involute", "seg_edge_r", "seg_root_r", "seg_outer", "seg_root"].forEach(id => {
+        params[id] = parseInt(document.getElementById(id).value);
+    });
+    return params;
+}
+
+function setParams(data) {
+    for (const key in data) {
+        const element = document.getElementById(key);
+        if (element) {
+            element.value = data[key];
+        }
+    }
+}
+
+function getSpecData(M, ALPHA, Z, X, A, D, B, base_dia, pitch_dia, offset_dia, root_dia, outer_dia) {
+    return [
+        { name: 'Type', value: ALPHA === 20 ? 'Standard' : 'Non-Standard', unit: '' },
+        { name: 'Module', value: M, unit: 'mm' },
+        { name: 'Pressure Angle', value: ALPHA, unit: 'deg' },
+        { name: 'Teeth Number', value: Z, unit: 'ea' },
+        { name: 'Offset Factor', value: X, unit: '' },
+        { name: 'Offset', value: (X * M).toFixed(4), unit: 'mm' },
+        { name: 'Backlash Factor', value: B, unit: '' },
+        { name: 'Backlash', value: (B * M).toFixed(4), unit: 'mm' },
+        { name: 'Addendum Factor', value: A, unit: '' },
+        { name: 'Addendum', value: (A * M).toFixed(4), unit: 'mm' },
+        { name: 'Dedendum Factor', value: D, unit: '' },
+        { name: 'Dedendum', value: (D * M).toFixed(4), unit: 'mm' },
+        { name: 'Total Tooth Height', value: (A * M + D * M).toFixed(4), unit: 'mm' },
+        { name: 'Base Circle Dia', value: base_dia.toFixed(4), unit: 'mm' },
+        { name: 'Pitch Circle Dia', value: pitch_dia.toFixed(4), unit: 'mm' },
+        { name: 'Offset Circle Dia', value: offset_dia.toFixed(4), unit: 'mm' },
+        { name: 'Root Circle Dia', value: root_dia.toFixed(4), unit: 'mm' },
+        { name: 'Outer Circle Dia', value: outer_dia.toFixed(4), unit: 'mm' },
+    ];
+}
+
+function updateSpecTable(specData) {
+    const tableBody = document.getElementById('spec-table');
+    let html = '<thead><tr><th>Parameter</th><th>Value</th><th>Unit</th></tr></thead><tbody>';
+    specData.forEach(item => {
+        html += `<tr><td>${item.name}</td><td>${item.value}</td><td>${item.unit}</td></tr>`;
+    });
+    html += '</tbody>';
+    tableBody.innerHTML = html;
+}
+
+function FGPG2_PLOT() {
+    let { m: M, z: Z, alpha: ALPHA, x: X, b: B, a: A, d: D, c: C, e: E, x0: X_0, y0: Y_0, seg_circle: SEG_CIRCLE, seg_involute: SEG_INVOLUTE, seg_edge_r: SEG_EDGE_R, seg_root_r: SEG_ROOT_R, seg_outer: SEG_OUTER, seg_root: SEG_ROOT, scale: SCALE } = getParams();
+
+    const internalResult = Internal(Z, X, B, A, D, C, E);
+    Z = internalResult.Z; X = internalResult.X; B = internalResult.B; A = internalResult.A; D = internalResult.D; C = internalResult.C; E = internalResult.E;
+
+    const p = Parameters(M, Z, ALPHA, X, B, A, D, C, E);
+    E = p.E;
+
+    const { X11, Y11 } = InvoluteCurve(M, Z, SEG_INVOLUTE, p.THETA_IS, p.THETA_IE, p.ALPHA_0, p.ALPHA_IS);
+    const { XX2: X12, YY2: Y12 } = SymetryY(X11, Y11);
+
+    const { X21, Y21 } = EdgeRoundCurve(M, E, X11, Y11, p.X_E, p.Y_E, p.X_E0, p.Y_E0, SEG_EDGE_R);
+    const { XX2: X22, YY2: Y22 } = SymetryY(X21, Y21);
+
+    const { X31, Y31 } = RootRoundCurve(M, Z, X, D, C, B, p.THETA_TE, p.ALPHA_TS, SEG_ROOT_R);
+    const { XX2: X32, YY2: Y32 } = SymetryY(X31, Y31);
+
+    const { X41, Y41 } = OuterArc(M, Z, X, A, p.ALPHA_E, p.ALPHA_M, SEG_OUTER);
+    const { XX2: X42, YY2: Y42 } = SymetryY(X41, Y41);
+
+    const { X51, Y51 } = RootArc(M, Z, X, D, p.ALPHA_TS, SEG_ROOT);
+    const { XX2: X52, YY2: Y52 } = SymetryY(X51, Y51);
+
+    const { X1: toothX, Y1: toothY } = CombineTooth(X11, Y11, X21, Y21, X31, Y31, X41, Y41, X51, Y51, X12, Y12, X22, Y22, X32, Y32, X42, Y42, X52, Y52);
+    const { XX: X2, YY: Y2 } = Rotation(toothX, toothY, p.ALIGN_ANGLE);
+
+    const datasets = [];
+    for (let i = 0; i < Z; i++) {
+        const { XX: Xtemp, YY: Ytemp } = Rotation(X2, Y2, p.P_ANGLE * i);
+        const { Xt, Yt } = Transform(Xtemp, Ytemp, X_0, Y_0);
+        datasets.push({
+            label: `Tooth ${i + 1}`,
+            data: Xt.map((val, index) => ({ x: val, y: Yt[index] })),
+            borderColor: 'black',
+            showLine: true,
+            fill: false,
+        });
+    }
+
+    const base_dia = M * Z * Math.cos(p.ALPHA_0);
+    const pitch_dia = M * Z;
+    const offset_dia = 2 * M * (Z / 2 + X);
+    const outer_dia = 2 * M * (Z / 2 + X + A);
+    const root_dia = 2 * M * (Z / 2 + X - D);
+
+    const circles = [
+        { dia: base_dia, color: 'cyan', label: 'Base Circle' },
+        { dia: pitch_dia, color: 'magenta', label: 'Pitch Circle' },
+        { dia: offset_dia, color: 'red', label: 'Offset Circle' },
+        { dia: outer_dia, color: 'brown', label: 'Outer Circle' },
+        { dia: root_dia, color: 'grey', label: 'Root Circle' },
+    ];
+
+    circles.forEach(circ => {
+        const { XX, YY } = Circle(circ.dia, SEG_CIRCLE, X_0, Y_0);
+        datasets.push({
+            label: circ.label,
+            data: XX.map((val, index) => ({ x: val, y: YY[index] })),
+            borderColor: circ.color,
+            borderDash: [5, 5],
+            borderWidth: 1,
+            showLine: true,
+            fill: false,
+        });
+    });
+
+    gearChart.data.datasets = datasets;
+
+    if (document.getElementById('toggle-view').checked) {
+        const Y_height = ((outer_dia - root_dia) / 2.0) / SCALE;
+        const Y_cen = (outer_dia + root_dia) / 4.0 + Y_0;
+        gearChart.options.scales.x.min = -(Y_height / 2.0) + X_0;
+        gearChart.options.scales.x.max = (Y_height / 2.0) + X_0;
+        gearChart.options.scales.y.min = Y_cen - Y_height / 2.0;
+        gearChart.options.scales.y.max = Y_cen + Y_height / 2.0;
+    } else {
+        delete gearChart.options.scales.x.min;
+        delete gearChart.options.scales.x.max;
+        delete gearChart.options.scales.y.min;
+        delete gearChart.options.scales.y.max;
+    }
+
+    gearChart.update();
+    document.getElementById('outputText').textContent = 'Finished generating.';
+
+    const specData = getSpecData(M, ALPHA, Z, X, A, D, B, base_dia, pitch_dia, offset_dia, root_dia, outer_dia);
+    updateSpecTable(specData);
+    
+    // Return values needed for saving files
+    return { M, ALPHA, Z, X, A, D, B, base_dia, pitch_dia, offset_dia, root_dia, outer_dia, X12, Y12, X22, Y22, X32, Y32, X_0, Y_0 };
+}
+
+function downloadFile(filename, content) {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+// --- Event Listeners ---
+document.getElementById('run-button').addEventListener('click', FGPG2_PLOT);
+document.getElementById('toggle-view').addEventListener('change', FGPG2_PLOT);
+
+document.getElementById('file-input').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+    Papa.parse(file, {
+        header: true,
+        complete: function(results) {
+            const params = {};
+            results.data.forEach(row => {
+                if (row.parameter) {
+                    params[row.parameter] = row.value;
+                }
+            });
+            setParams(params);
+            document.getElementById('outputText').textContent = `File ${file.name} loaded.`;
+        }
+    });
+});
+
+document.getElementById('save-params-button').addEventListener('click', () => {
+    const params = getParams();
+    let csvContent = "parameter,value\n";
+    for (const key in params) {
+        csvContent += `${key},${params[key]}\n`;
+    }
+    downloadFile('Inputs.csv', csvContent);
+});
+
+document.getElementById('save-spec-button').addEventListener('click', () => {
+    const { M, ALPHA, Z, X, A, D, B, base_dia, pitch_dia, offset_dia, root_dia, outer_dia } = FGPG2_PLOT();
+    const specData = getSpecData(M, ALPHA, Z, X, A, D, B, base_dia, pitch_dia, offset_dia, root_dia, outer_dia);
+    let content = specData.map(e => [e.name, e.value, e.unit].join(',')).join('\n');
+    downloadFile('Result.csv', content);
+});
+
+document.getElementById('save-dxf-button').addEventListener('click', () => {
+    const { Z, X_0, Y_0, outer_dia, root_dia, offset_dia, X12, Y12, X22, Y22, X32, Y32 } = FGPG2_PLOT();
+    
+    const Xdxf1 = [...X22, ...X12.slice(1), ...X32.slice(1)];
+    const Ydxf1 = [...Y22, ...Y12.slice(1), ...Y32.slice(1)];
+
+    const ALIGN_ANGLE_DXF = Math.PI / 2 + Math.PI / Z;
+    const { XX: Xdxf3, YY: Ydxf3 } = Rotation(Xdxf1, Ydxf1, ALIGN_ANGLE_DXF);
+    const Xdxf4 = Xdxf3.map(x => -x);
+    const Ydxf4 = Ydxf3;
+
+    let dxf = `
+  0\nSECTION\n  2\nENTITIES\n`;
+    // This is a simplified DXF generator. A full implementation is more complex.
+    // It generates one tooth and the main circles.
+    // Full gear array is omitted for simplicity in client-side JS.
+    dxf += `  0\nCIRCLE\n  8\n0\n 10\n${X_0}\n 20\n${Y_0}\n 40\n${outer_dia / 2}\n  0\nCIRCLE\n  8\n0\n 10\n${X_0}\n 20\n${Y_0}\n 40\n${root_dia / 2}\n  0\nCIRCLE\n  8\n0\n 10\n${X_0}\n 20\n${Y_0}\n 40\n${offset_dia / 2}\n`;
+    // Add splines for the tooth profile
+    dxf += `  0\nSPLINE\n  8\n0\n 70\n8\n 71\n3\n`;
+    for(let i=0; i<Xdxf3.length; i++) {
+        dxf += ` 10\n${Xdxf3[i] + X_0}\n 20\n${Ydxf3[i] + Y_0}\n`;
+    }
+    dxf += `  0\nSPLINE\n  8\n0\n 70\n8\n 71\n3\n`;
+    for(let i=0; i<Xdxf4.length; i++) {
+        dxf += ` 10\n${Xdxf4[i] + X_0}\n 20\n${Ydxf4[i] + Y_0}\n`;
+    }
+
+    dxf += `  0\nENDSEC\n  0\nEOF\n`;
+    downloadFile('Result.dxf', dxf);
+});
+
+
+document.getElementById('save-png-button').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = gearChart.toBase64Image();
+    a.download = 'Result.png';
+    a.click();
+});
+
+
+// Initial plot on load
+window.onload = FGPG2_PLOT;
+
+</script>
+</body>
+</html>
