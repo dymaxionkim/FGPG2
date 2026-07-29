@@ -93,30 +93,40 @@ def generate(p: GearParams, work_dir: str) -> None:
 def _draw_annotations(ax, p, base_dia, pitch_dia, offset_dia, outer_dia, root_dia):
     height = root_dia / 22.5
     nrow = 15 * height
-    lines = (
-        ("Module m=%s[mm]", p.m),
-        ("Teeth Number z=%s[ea]", p.z),
-        ("Pressure angle alpha=%s[deg]", p.alpha),
-        ("Offset factor x=%s", p.x),
-        ("Backlash factor b=%s", p.b),
-        ("Addendum factor a=%s", p.a),
-        ("Dedendum factor d=%s", p.d),
-        ("Radius Factor of Edge Round of Hob c=%s", p.c),
-        ("Radius Factor of Edge Round of Tooth e=%s", p.e),
-        ("Center Position = %s[mm]", [p.x_0, p.y_0]),
-        ("Base Circle Dia = %s[mm]", base_dia, "cyan"),
-        ("Pitch Circle Dia = %s[mm]", pitch_dia, "magenta"),
-        ("Offset Circle Dia = %s[mm]", offset_dia, "red"),
-        ("Outer Circle Dia = %s[mm]", outer_dia, "brown"),
-        ("Root Circle Dia = %s[mm]", root_dia, "grey"),
-    )
-    for i, item in enumerate(lines):
-        fmt, *rest = item
-        color = rest[-1] if rest[-1] in {"cyan", "magenta", "red", "brown", "grey"} else "green"
-        value = rest[0]
+    green = []
+    colored = []
+
+    for i, (fmt, val) in enumerate(
+        (
+            ("Module m=%s[mm]", p.m),
+            ("Teeth Number z=%s[ea]", p.z),
+            ("Pressure angle alpha=%s[deg]", p.alpha),
+            ("Offset factor x=%s", p.x),
+            ("Backlash factor b=%s", p.b),
+            ("Addendum factor a=%s", p.a),
+            ("Dedendum factor d=%s", p.d),
+            ("Radius Factor of Edge Round of Hob c=%s", p.c),
+            ("Radius Factor of Edge Round of Tooth e=%s", p.e),
+            ("Center Position = %s[mm]", [p.x_0, p.y_0]),
+        )
+    ):
+        green.append((fmt % (val,), "green"))
+    for i, (fmt, val, color) in enumerate(
+        (
+            ("Base Circle Dia = %s[mm]", base_dia, "cyan"),
+            ("Pitch Circle Dia = %s[mm]", pitch_dia, "magenta"),
+            ("Offset Circle Dia = %s[mm]", offset_dia, "red"),
+            ("Outer Circle Dia = %s[mm]", outer_dia, "brown"),
+            ("Root Circle Dia = %s[mm]", root_dia, "grey"),
+        ),
+        start=10,
+    ):
+        colored.append((fmt % (val,), color))
+
+    for i, (text, color) in enumerate(green + colored):
         ax.text(
             p.x_0, p.y_0 + nrow / 2 - height * i,
-            fmt % (value,),
+            text,
             verticalalignment="center", horizontalalignment="center",
             color=color, fontsize="x-small",
         )
