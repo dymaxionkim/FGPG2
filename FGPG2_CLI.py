@@ -1,16 +1,20 @@
 """Command-line gear generator for FGPG2.
 
 Usage:
-    python FGPG2_CLI.py <path/to/Results.csv>
+    python FGPG2_CLI.py <path/to/Results.csv> [involute|cycloid]
 
 Reads the gear parameters from the given CSV (two columns: parameter/value,
 as written by the GUI's Inputs.csv) and writes Result.csv, Result.dxf,
 Result1.png and Result2.png into the same directory as the input file.
+
+The optional second argument selects the gear profile and overrides the
+``profile`` row of the CSV (defaults to the CSV value, then "involute").
 """
 
 import argparse
 import os
 import sys
+from dataclasses import replace
 
 import pandas as pd
 
@@ -40,7 +44,10 @@ def load_params(csv_path: str) -> GearParams:
     for key in DEFAULT_PARAMS.__dataclass_fields__:
         if key in values.index:
             raw = values.loc[key]
-            kwargs[key] = int(raw) if key in _INT_FIELDS else float(raw)
+            if key == "profile":
+                kwargs[key] = str(raw).strip()
+            else:
+                kwargs[key] = int(raw) if key in _INT_FIELDS else float(raw)
         else:
             kwargs[key] = getattr(DEFAULT_PARAMS, key)
     return GearParams(**kwargs)
@@ -54,6 +61,12 @@ def main() -> int:
         "csv",
         help="Path to the input parameters CSV (e.g. Results.csv).",
     )
+    parser.add_argument(
+        "profile",
+        nargs="?",
+        choices=("involute", "cycloid"),
+        help="Gear profile: 'involute' or 'cycloid' (overrides the CSV 'profile' row).",
+    )
     args = parser.parse_args()
 
     csv_path = os.path.abspath(args.csv)
@@ -63,6 +76,8 @@ def main() -> int:
 
     try:
         p = load_params(csv_path)
+        if args.profile:
+            p = replace(p, profile=args.profile)
     except Exception as exc:
         print(f"Error: failed to read parameters: {exc}", file=sys.stderr)
         return 1

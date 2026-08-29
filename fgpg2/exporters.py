@@ -72,7 +72,7 @@ def save_dxf(
 
 def save_spec(
     p: GearParams,
-    base_dia: float,
+    base_dia: float | None,
     pitch_dia: float,
     offset_dia: float,
     root_dia: float,
@@ -80,10 +80,16 @@ def save_spec(
     work_dir: str,
 ) -> str:
     """Write the gear specification spreadsheet as CSV."""
-    rows = [
-        ("Type", "Standard" if p.alpha == 20 else "Non-Standard"),
+    is_cycloid = p.profile == "cycloid"
+    rows = []
+    if is_cycloid:
+        rows.append(("Type", "Cycloid"))
+        rows.append(("Rolling Radius Factor (Pd/m)", p.gen_ratio))
+    else:
+        rows.append(("Type", "Standard" if p.alpha == 20 else "Non-Standard"))
+        rows.append(("Pressure Angle", p.alpha, "deg"))
+    rows += [
         ("Module", p.m, "mm"),
-        ("Pressure Angle", p.alpha, "deg"),
         ("Teeth Number", p.z, "ea"),
         ("Offset Factor", p.x),
         ("Offset", p.x * p.m, "mm"),
@@ -94,7 +100,10 @@ def save_spec(
         ("Dedendum Factor", p.d),
         ("Dedendum", p.d * p.m, "mm"),
         ("Total Tooth Height", p.a * p.m + p.d * p.m, "mm"),
-        ("Base Circle Dia", base_dia, "mm"),
+    ]
+    if base_dia is not None:
+        rows.append(("Base Circle Dia", base_dia, "mm"))
+    rows += [
         ("Pitch Circle Dia", pitch_dia, "mm"),
         ("Offset Circle Dia", offset_dia, "mm"),
         ("Root Circle Dia", root_dia, "mm"),

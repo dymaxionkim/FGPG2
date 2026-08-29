@@ -27,6 +27,8 @@ class GearParams:
     seg_outer: int
     seg_root: int
     scale: float
+    gen_ratio: float = 3.0
+    profile: str = "involute"
 
 
 @dataclass

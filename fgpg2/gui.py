@@ -18,6 +18,7 @@ DEFAULT_PARAMS = GearParams(
     m=1.0, z=18, alpha=20, x=0.0, b=0.05, a=1.0, d=1.25, c=0.2, e=0.1,
     x_0=0.0, y_0=0.0, seg_circle=360, seg_involute=15, seg_edge_r=5,
     seg_root_r=5, seg_outer=5, seg_root=5, scale=0.7,
+    gen_ratio=3.0, profile="involute",
 )
 
 _INT_FIELDS = {
@@ -35,6 +36,7 @@ GEAR_FIELDS = [
     ("d",      "Dedendum Factor, d = ",  "1.25 for Standard"),
     ("c",      "Radius of Hob end, c = ","[mm]"),
     ("e",      "Radius of Tooth end, e = ","[mm]"),
+    ("gen_ratio", "Gen Ratio, = ",  "[Pd/m] : Cycloid only"),
 ]
 
 GRAPHICS_FIELDS = [
@@ -48,6 +50,10 @@ GRAPHICS_FIELDS = [
     ("seg_root",     "seg_root = ",     "[ea]"),
     ("scale",        "scale = ",        "0.1 ~ 1.0"),
 ]
+
+PROFILE_OPTIONS = ["Involute", "Cycloid"]
+PROFILE_TO_VALUE = {"Involute": "involute", "Cycloid": "cycloid"}
+VALUE_TO_PROFILE = {v: k for k, v in PROFILE_TO_VALUE.items()}
 
 
 class FGPG2App(tk.Tk):
@@ -147,6 +153,11 @@ class FGPG2App(tk.Tk):
         btn_frame = ttk.Frame(right)
         btn_frame.pack(fill="x")
         ttk.Button(btn_frame, text="Load", command=self._load_inputs, width=9).pack(side="left", padx=(0, 4))
+        self._profile_var = tk.StringVar(value="Involute")
+        ttk.Combobox(
+            btn_frame, textvariable=self._profile_var,
+            values=PROFILE_OPTIONS, state="readonly", width=9,
+        ).pack(side="left", padx=(0, 4))
         ttk.Button(btn_frame, text="▶  Run", command=self._run, width=9).pack(side="left", padx=(0, 4))
         self._toggle_var = tk.StringVar(value="Result1")
         ttk.Checkbutton(
@@ -174,12 +185,14 @@ class FGPG2App(tk.Tk):
             val = getattr(self.params, key)
             ent.delete(0, "end")
             ent.insert(0, val)
+        self._profile_var.set(VALUE_TO_PROFILE.get(self.params.profile, "Involute"))
 
     def _entries_to_params(self) -> GearParams:
         kwargs = {}
         for key, ent in self.entries.items():
             raw = ent.get()
             kwargs[key] = int(raw) if key in _INT_FIELDS else float(raw)
+        kwargs["profile"] = PROFILE_TO_VALUE.get(self._profile_var.get(), "involute")
         return GearParams(**kwargs)
 
     def _read_wd(self) -> str:
@@ -205,8 +218,14 @@ class FGPG2App(tk.Tk):
         df = pd.read_csv(path, index_col="parameter")
         kwargs = {}
         for key in DEFAULT_PARAMS.__dataclass_fields__:
+            if key not in df.index:
+                kwargs[key] = getattr(DEFAULT_PARAMS, key)
+                continue
             raw = df.loc[key, "value"]
-            kwargs[key] = int(raw) if key in _INT_FIELDS else float(raw)
+            if key == "profile":
+                kwargs[key] = str(raw).strip()
+            else:
+                kwargs[key] = int(raw) if key in _INT_FIELDS else float(raw)
         self.status_text.config(text=f"Loaded: {path}")
         return GearParams(**kwargs)
 
@@ -234,7 +253,11 @@ class FGPG2App(tk.Tk):
         os.makedirs(self.work_dir, exist_ok=True)
         self.status_text.config(text="Generating…")
         self.update_idletasks()
-        generate(self.params, self.work_dir)
+        try:
+            generate(self.params, self.work_dir)
+        except Exception as exc:
+            self.status_text.config(text=f"Error: {exc}")
+            return
         self._save_inputs_csv()
         self._display_image("Result1.png")
         self.status_text.config(text="Finished.")
